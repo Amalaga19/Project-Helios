@@ -1,0 +1,3 @@
+[submodule "nextui-dashboard-template"]
+    path = nextui-dashboard-template
+    url = https://github.com/Siumauricio/nextui-dashboard-template.git
