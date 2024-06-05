@@ -15,7 +15,7 @@ results_number = 500
 
 #Coordinates corresponding to IE University's Maria de Molina campus
 longitude = -3.681917087641409
-latitude = 40.48017420167045
+latitude = 40.437654856444254
 
 print(api_key)
 
