@@ -5,7 +5,7 @@ import os
 
 load_dotenv()
 
-api_key = os.getenv('API_KEY_GEOAPIFY') # API key for GeoAPIfy, get yours at https://myprojects.geoapify.com/ and insert it in the .env file 
+api_key = os.getenv('API_KEY_GEOAPIFY') # API key for Geoapify, get yours at https://myprojects.geoapify.com/ and insert it in the .env file 
 
 api_url = "https://api.geoapify.com/v2/places?categories=commercial&filter=circle:"
 
@@ -13,26 +13,29 @@ radius_meters = 2000
 
 results_number = 500
 
+businesses_dict = {}
+
 #Coordinates corresponding to IE University's Maria de Molina campus
 longitude = -3.681917087641409
 latitude = 40.437654856444254
 
 print(api_key)
 
-def get_businesses(lon, lat):
+def get_businesses(lon, lat): #Function to get businesses from Geoapify 
     url = f"{api_url}{lon},{lat},{radius_meters}&bias=proximity:{lon},{lat}&limit={results_number}&apiKey={api_key}"
     response = requests.get(url)
     data = response.json()
     return data
 
-def json_to_csv(data):
+def json_to_csv(data): #Function to convert the JSON data to a CSV file
     businesses = data['features']
     counter = 0
     with open('businesses.csv', 'w') as file:
-        businesses_dict = {}
         file.write('id,name,longitude,latitude,country,state,city,district,neighbourhood,suburb,street,postcode,address,categories\n')
         for business in businesses:
+            # Check if the business is in Spain (in case the area covered by the circle includes other countries) and if certain information is present
             if "country" in business["properties"] and business["properties"]["country"] == "Spain" and "name" in business['properties'] and "postcode" in business['properties'] and "categories" in business['properties']:
+                # Check if less crucial information is present and assign an empty string if it is not
                 if "neighbourhood" not in business['properties']:
                     business['properties']['neighbourhood'] = ""
                 if "suburb" not in business['properties']:
@@ -49,6 +52,7 @@ def json_to_csv(data):
                     business['properties']['postcode'] = ""
                 if "formatted" not in business['properties']:
                     business['properties']['formatted'] = ""
+                # Assign the information to variables
                 name = business['properties']['name']
                 id = business['properties']['datasource']['raw']['osm_id']
                 longitude = business['geometry']['coordinates'][0]
@@ -63,6 +67,7 @@ def json_to_csv(data):
                 postcode = business['properties']['postcode']
                 address = business['properties']['formatted']
                 categories = business['properties']['categories']
+                # Add the information to the dictionary
                 businesses_dict[id] = {
                     'name': name,
                     'latitude': latitude,
@@ -79,8 +84,9 @@ def json_to_csv(data):
                     'categories': categories
                 }
                 counter += 1
+                # Write the information to the CSV file
                 file.write(f"{id},{name},{longitude},{latitude},{country},{state},{city},{district},{neighbourhood},{suburb},{street},{postcode},{address},{categories}\n")
-        print(f"Total businesses: {counter}")
+        print(f"Total businesses: {counter}") # Print the total number of businesses found that have the crucial information (are in Spain, the name is present and there is a postcode and category list).
     return businesses_dict
 
 business_data = get_businesses(longitude, latitude)
