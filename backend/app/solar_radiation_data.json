@@ -1,0 +1,823 @@
+{
+    "inputs": {
+        "location": {
+            "latitude": 52.52,
+            "longitude": 13.405,
+            "elevation": 37.0
+        },
+        "meteo_data": {
+            "radiation_db": "PVGIS-SARAH",
+            "meteo_db": "ERA-Interim",
+            "year_min": 2005,
+            "year_max": 2016,
+            "use_horizon": true,
+            "horizon_db": null,
+            "horizon_data": "DEM-calculated"
+        },
+        "plane": {
+            "fixed_horizontal": {
+                "slope": {
+                    "value": 0,
+                    "optimal": "-"
+                },
+                "azimuth": {
+                    "value": "-",
+                    "optimal": "-"
+                }
+            }
+        }
+    },
+    "outputs": {
+        "monthly": [
+            {
+                "year": 2005,
+                "month": 1,
+                "H(h)_m": 15.71
+            },
+            {
+                "year": 2005,
+                "month": 2,
+                "H(h)_m": 30.32
+            },
+            {
+                "year": 2005,
+                "month": 3,
+                "H(h)_m": 72.54
+            },
+            {
+                "year": 2005,
+                "month": 4,
+                "H(h)_m": 140.55
+            },
+            {
+                "year": 2005,
+                "month": 5,
+                "H(h)_m": 143.79
+            },
+            {
+                "year": 2005,
+                "month": 6,
+                "H(h)_m": 172.61
+            },
+            {
+                "year": 2005,
+                "month": 7,
+                "H(h)_m": 144.57
+            },
+            {
+                "year": 2005,
+                "month": 8,
+                "H(h)_m": 139.75
+            },
+            {
+                "year": 2005,
+                "month": 9,
+                "H(h)_m": 107.87
+            },
+            {
+                "year": 2005,
+                "month": 10,
+                "H(h)_m": 71.55
+            },
+            {
+                "year": 2005,
+                "month": 11,
+                "H(h)_m": 27.4
+            },
+            {
+                "year": 2005,
+                "month": 12,
+                "H(h)_m": 13.64
+            },
+            {
+                "year": 2006,
+                "month": 1,
+                "H(h)_m": 24.99
+            },
+            {
+                "year": 2006,
+                "month": 2,
+                "H(h)_m": 26.67
+            },
+            {
+                "year": 2006,
+                "month": 3,
+                "H(h)_m": 63.26
+            },
+            {
+                "year": 2006,
+                "month": 4,
+                "H(h)_m": 99.11
+            },
+            {
+                "year": 2006,
+                "month": 5,
+                "H(h)_m": 154.22
+            },
+            {
+                "year": 2006,
+                "month": 6,
+                "H(h)_m": 174.94
+            },
+            {
+                "year": 2006,
+                "month": 7,
+                "H(h)_m": 208.46
+            },
+            {
+                "year": 2006,
+                "month": 8,
+                "H(h)_m": 120.22
+            },
+            {
+                "year": 2006,
+                "month": 9,
+                "H(h)_m": 112.4
+            },
+            {
+                "year": 2006,
+                "month": 10,
+                "H(h)_m": 60.41
+            },
+            {
+                "year": 2006,
+                "month": 11,
+                "H(h)_m": 27.12
+            },
+            {
+                "year": 2006,
+                "month": 12,
+                "H(h)_m": 15.58
+            },
+            {
+                "year": 2007,
+                "month": 1,
+                "H(h)_m": 18.92
+            },
+            {
+                "year": 2007,
+                "month": 2,
+                "H(h)_m": 34.28
+            },
+            {
+                "year": 2007,
+                "month": 3,
+                "H(h)_m": 88.28
+            },
+            {
+                "year": 2007,
+                "month": 4,
+                "H(h)_m": 147.97
+            },
+            {
+                "year": 2007,
+                "month": 5,
+                "H(h)_m": 166.79
+            },
+            {
+                "year": 2007,
+                "month": 6,
+                "H(h)_m": 161.98
+            },
+            {
+                "year": 2007,
+                "month": 7,
+                "H(h)_m": 145.85
+            },
+            {
+                "year": 2007,
+                "month": 8,
+                "H(h)_m": 135.78
+            },
+            {
+                "year": 2007,
+                "month": 9,
+                "H(h)_m": 88.0
+            },
+            {
+                "year": 2007,
+                "month": 10,
+                "H(h)_m": 53.8
+            },
+            {
+                "year": 2007,
+                "month": 11,
+                "H(h)_m": 20.93
+            },
+            {
+                "year": 2007,
+                "month": 12,
+                "H(h)_m": 14.5
+            },
+            {
+                "year": 2008,
+                "month": 1,
+                "H(h)_m": 18.21
+            },
+            {
+                "year": 2008,
+                "month": 2,
+                "H(h)_m": 42.48
+            },
+            {
+                "year": 2008,
+                "month": 3,
+                "H(h)_m": 73.47
+            },
+            {
+                "year": 2008,
+                "month": 4,
+                "H(h)_m": 106.06
+            },
+            {
+                "year": 2008,
+                "month": 5,
+                "H(h)_m": 183.92
+            },
+            {
+                "year": 2008,
+                "month": 6,
+                "H(h)_m": 183.06
+            },
+            {
+                "year": 2008,
+                "month": 7,
+                "H(h)_m": 146.84
+            },
+            {
+                "year": 2008,
+                "month": 8,
+                "H(h)_m": 120.62
+            },
+            {
+                "year": 2008,
+                "month": 9,
+                "H(h)_m": 85.41
+            },
+            {
+                "year": 2008,
+                "month": 10,
+                "H(h)_m": 49.97
+            },
+            {
+                "year": 2008,
+                "month": 11,
+                "H(h)_m": 18.18
+            },
+            {
+                "year": 2008,
+                "month": 12,
+                "H(h)_m": 14.33
+            },
+            {
+                "year": 2009,
+                "month": 1,
+                "H(h)_m": 19.88
+            },
+            {
+                "year": 2009,
+                "month": 2,
+                "H(h)_m": 26.14
+            },
+            {
+                "year": 2009,
+                "month": 3,
+                "H(h)_m": 65.47
+            },
+            {
+                "year": 2009,
+                "month": 4,
+                "H(h)_m": 163.0
+            },
+            {
+                "year": 2009,
+                "month": 5,
+                "H(h)_m": 158.19
+            },
+            {
+                "year": 2009,
+                "month": 6,
+                "H(h)_m": 148.34
+            },
+            {
+                "year": 2009,
+                "month": 7,
+                "H(h)_m": 162.49
+            },
+            {
+                "year": 2009,
+                "month": 8,
+                "H(h)_m": 158.59
+            },
+            {
+                "year": 2009,
+                "month": 9,
+                "H(h)_m": 111.02
+            },
+            {
+                "year": 2009,
+                "month": 10,
+                "H(h)_m": 44.59
+            },
+            {
+                "year": 2009,
+                "month": 11,
+                "H(h)_m": 25.89
+            },
+            {
+                "year": 2009,
+                "month": 12,
+                "H(h)_m": 15.41
+            },
+            {
+                "year": 2010,
+                "month": 1,
+                "H(h)_m": 22.18
+            },
+            {
+                "year": 2010,
+                "month": 2,
+                "H(h)_m": 35.3
+            },
+            {
+                "year": 2010,
+                "month": 3,
+                "H(h)_m": 76.25
+            },
+            {
+                "year": 2010,
+                "month": 4,
+                "H(h)_m": 133.27
+            },
+            {
+                "year": 2010,
+                "month": 5,
+                "H(h)_m": 102.25
+            },
+            {
+                "year": 2010,
+                "month": 6,
+                "H(h)_m": 182.56
+            },
+            {
+                "year": 2010,
+                "month": 7,
+                "H(h)_m": 187.18
+            },
+            {
+                "year": 2010,
+                "month": 8,
+                "H(h)_m": 117.85
+            },
+            {
+                "year": 2010,
+                "month": 9,
+                "H(h)_m": 85.5
+            },
+            {
+                "year": 2010,
+                "month": 10,
+                "H(h)_m": 60.78
+            },
+            {
+                "year": 2010,
+                "month": 11,
+                "H(h)_m": 20.47
+            },
+            {
+                "year": 2010,
+                "month": 12,
+                "H(h)_m": 17.98
+            },
+            {
+                "year": 2011,
+                "month": 1,
+                "H(h)_m": 21.08
+            },
+            {
+                "year": 2011,
+                "month": 2,
+                "H(h)_m": 42.42
+            },
+            {
+                "year": 2011,
+                "month": 3,
+                "H(h)_m": 94.37
+            },
+            {
+                "year": 2011,
+                "month": 4,
+                "H(h)_m": 136.18
+            },
+            {
+                "year": 2011,
+                "month": 5,
+                "H(h)_m": 180.14
+            },
+            {
+                "year": 2011,
+                "month": 6,
+                "H(h)_m": 173.72
+            },
+            {
+                "year": 2011,
+                "month": 7,
+                "H(h)_m": 131.78
+            },
+            {
+                "year": 2011,
+                "month": 8,
+                "H(h)_m": 132.14
+            },
+            {
+                "year": 2011,
+                "month": 9,
+                "H(h)_m": 104.58
+            },
+            {
+                "year": 2011,
+                "month": 10,
+                "H(h)_m": 65.34
+            },
+            {
+                "year": 2011,
+                "month": 11,
+                "H(h)_m": 37.28
+            },
+            {
+                "year": 2011,
+                "month": 12,
+                "H(h)_m": 17.27
+            },
+            {
+                "year": 2012,
+                "month": 1,
+                "H(h)_m": 20.93
+            },
+            {
+                "year": 2012,
+                "month": 2,
+                "H(h)_m": 39.0
+            },
+            {
+                "year": 2012,
+                "month": 3,
+                "H(h)_m": 86.17
+            },
+            {
+                "year": 2012,
+                "month": 4,
+                "H(h)_m": 120.27
+            },
+            {
+                "year": 2012,
+                "month": 5,
+                "H(h)_m": 165.1
+            },
+            {
+                "year": 2012,
+                "month": 6,
+                "H(h)_m": 144.16
+            },
+            {
+                "year": 2012,
+                "month": 7,
+                "H(h)_m": 156.31
+            },
+            {
+                "year": 2012,
+                "month": 8,
+                "H(h)_m": 143.37
+            },
+            {
+                "year": 2012,
+                "month": 9,
+                "H(h)_m": 105.05
+            },
+            {
+                "year": 2012,
+                "month": 10,
+                "H(h)_m": 59.62
+            },
+            {
+                "year": 2012,
+                "month": 11,
+                "H(h)_m": 22.15
+            },
+            {
+                "year": 2012,
+                "month": 12,
+                "H(h)_m": 14.91
+            },
+            {
+                "year": 2013,
+                "month": 1,
+                "H(h)_m": 17.99
+            },
+            {
+                "year": 2013,
+                "month": 2,
+                "H(h)_m": 23.45
+            },
+            {
+                "year": 2013,
+                "month": 3,
+                "H(h)_m": 69.49
+            },
+            {
+                "year": 2013,
+                "month": 4,
+                "H(h)_m": 109.44
+            },
+            {
+                "year": 2013,
+                "month": 5,
+                "H(h)_m": 124.86
+            },
+            {
+                "year": 2013,
+                "month": 6,
+                "H(h)_m": 158.68
+            },
+            {
+                "year": 2013,
+                "month": 7,
+                "H(h)_m": 177.99
+            },
+            {
+                "year": 2013,
+                "month": 8,
+                "H(h)_m": 148.37
+            },
+            {
+                "year": 2013,
+                "month": 9,
+                "H(h)_m": 76.34
+            },
+            {
+                "year": 2013,
+                "month": 10,
+                "H(h)_m": 50.8
+            },
+            {
+                "year": 2013,
+                "month": 11,
+                "H(h)_m": 20.77
+            },
+            {
+                "year": 2013,
+                "month": 12,
+                "H(h)_m": 16.52
+            },
+            {
+                "year": 2014,
+                "month": 1,
+                "H(h)_m": 19.81
+            },
+            {
+                "year": 2014,
+                "month": 2,
+                "H(h)_m": 45.46
+            },
+            {
+                "year": 2014,
+                "month": 3,
+                "H(h)_m": 89.88
+            },
+            {
+                "year": 2014,
+                "month": 4,
+                "H(h)_m": 121.09
+            },
+            {
+                "year": 2014,
+                "month": 5,
+                "H(h)_m": 136.89
+            },
+            {
+                "year": 2014,
+                "month": 6,
+                "H(h)_m": 162.23
+            },
+            {
+                "year": 2014,
+                "month": 7,
+                "H(h)_m": 176.45
+            },
+            {
+                "year": 2014,
+                "month": 8,
+                "H(h)_m": 141.02
+            },
+            {
+                "year": 2014,
+                "month": 9,
+                "H(h)_m": 93.89
+            },
+            {
+                "year": 2014,
+                "month": 10,
+                "H(h)_m": 54.5
+            },
+            {
+                "year": 2014,
+                "month": 11,
+                "H(h)_m": 25.02
+            },
+            {
+                "year": 2014,
+                "month": 12,
+                "H(h)_m": 15.69
+            },
+            {
+                "year": 2015,
+                "month": 1,
+                "H(h)_m": 18.14
+            },
+            {
+                "year": 2015,
+                "month": 2,
+                "H(h)_m": 45.73
+            },
+            {
+                "year": 2015,
+                "month": 3,
+                "H(h)_m": 77.87
+            },
+            {
+                "year": 2015,
+                "month": 4,
+                "H(h)_m": 127.16
+            },
+            {
+                "year": 2015,
+                "month": 5,
+                "H(h)_m": 155.17
+            },
+            {
+                "year": 2015,
+                "month": 6,
+                "H(h)_m": 163.65
+            },
+            {
+                "year": 2015,
+                "month": 7,
+                "H(h)_m": 168.12
+            },
+            {
+                "year": 2015,
+                "month": 8,
+                "H(h)_m": 167.2
+            },
+            {
+                "year": 2015,
+                "month": 9,
+                "H(h)_m": 97.88
+            },
+            {
+                "year": 2015,
+                "month": 10,
+                "H(h)_m": 56.69
+            },
+            {
+                "year": 2015,
+                "month": 11,
+                "H(h)_m": 24.75
+            },
+            {
+                "year": 2015,
+                "month": 12,
+                "H(h)_m": 20.15
+            },
+            {
+                "year": 2016,
+                "month": 1,
+                "H(h)_m": 15.89
+            },
+            {
+                "year": 2016,
+                "month": 2,
+                "H(h)_m": 37.93
+            },
+            {
+                "year": 2016,
+                "month": 3,
+                "H(h)_m": 65.39
+            },
+            {
+                "year": 2016,
+                "month": 4,
+                "H(h)_m": 120.45
+            },
+            {
+                "year": 2016,
+                "month": 5,
+                "H(h)_m": 182.58
+            },
+            {
+                "year": 2016,
+                "month": 6,
+                "H(h)_m": 173.65
+            },
+            {
+                "year": 2016,
+                "month": 7,
+                "H(h)_m": 151.21
+            },
+            {
+                "year": 2016,
+                "month": 8,
+                "H(h)_m": 142.01
+            },
+            {
+                "year": 2016,
+                "month": 9,
+                "H(h)_m": 117.23
+            },
+            {
+                "year": 2016,
+                "month": 10,
+                "H(h)_m": 40.19
+            },
+            {
+                "year": 2016,
+                "month": 11,
+                "H(h)_m": 25.73
+            },
+            {
+                "year": 2016,
+                "month": 12,
+                "H(h)_m": 15.44
+            }
+        ]
+    },
+    "meta": {
+        "inputs": {
+            "location": {
+                "description": "Selected location",
+                "variables": {
+                    "latitude": {
+                        "description": "Latitude",
+                        "units": "decimal degree"
+                    },
+                    "longitude": {
+                        "description": "Longitude",
+                        "units": "decimal degree"
+                    },
+                    "elevation": {
+                        "description": "Elevation",
+                        "units": "m"
+                    }
+                }
+            },
+            "meteo_data": {
+                "description": "Sources of meteorological data",
+                "variables": {
+                    "radiation_db": {
+                        "description": "Solar radiation database"
+                    },
+                    "meteo_db": {
+                        "description": "Database used for meteorological variables other than solar radiation"
+                    },
+                    "year_min": {
+                        "description": "First year of the calculations"
+                    },
+                    "year_max": {
+                        "description": "Last year of the calculations"
+                    },
+                    "use_horizon": {
+                        "description": "Include horizon shadows"
+                    },
+                    "horizon_db": {
+                        "description": "Source of horizon data"
+                    }
+                }
+            },
+            "plane": {
+                "description": "plane",
+                "fields": {
+                    "slope": {
+                        "description": "Inclination angle from the horizontal plane",
+                        "units": "degree"
+                    },
+                    "azimuth": {
+                        "description": "Orientation (azimuth) angle of the (fixed) PV system (0 = S, 90 = W, -90 = E)",
+                        "units": "degree"
+                    }
+                }
+            }
+        },
+        "outputs": {
+            "monthly": {
+                "type": "time series",
+                "timestamp": "monthly averages",
+                "variables": {
+                    "H(h)_m": {
+                        "description": "Irradiation on horizontal plane",
+                        "units": "kWh/m2/mo"
+                    }
+                }
+            }
+        }
+    }
+}
