@@ -1,15 +1,13 @@
 import requests
-import json
-from dotenv import load_dotenv
-import os
-import csv
 import numpy as np
 import threading
+from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
 # List of API keys
-api_keys_list = [os.getenv(f'API_KEY_GEOAPIFY{i}') for i in range(16)]
+api_keys_list = [os.getenv(f'API_KEY_GEOAPIFY{i}') for i in range(21)]
 
 api_url = "https://api.geoapify.com/v2/places?categories=commercial&filter=circle:"
 
@@ -17,7 +15,7 @@ radius_meters = 2000
 
 results_number = 500
 
-# Coordinates for the bounding box
+# Coordinates for the bounding box - The approxiate coordinates for the furthest points north, south, east and west of the Community of Madrid
 furthest_north = 41.16570922250841
 
 furthest_south = 39.884619908455534
@@ -26,6 +24,7 @@ furthest_west = -4.578508218989555
 
 furthest_east = -3.0529962851916252
 
+# Number of steps to divide the grid into
 steps = 200
 
 x_step = (furthest_east - furthest_west) / steps
@@ -34,7 +33,7 @@ y_step = (furthest_north - furthest_south) / steps
 
 businesses_dict = {}
 
-semaphore = threading.Semaphore(16)
+semaphore = threading.Semaphore(21)
 
 lock = threading.Lock()
 
@@ -128,21 +127,26 @@ row_counter = 1
 for y in np.arange(furthest_south, furthest_north, y_step):
     column_counter = 0
     for x in np.arange(furthest_west, furthest_east, x_step):
-        semaphore.acquire()
-        api_key = api_keys_list[api_key_index % len(api_keys_list)]
+        semaphore.acquire() 
+        api_key = api_keys_list[api_key_index % len(api_keys_list)] # Use a different API key for each thread
         api_key_index += 1
-        thread = threading.Thread(target=process_grid_section, args=(x, x + x_step, y, y + y_step, api_key))
+        thread = threading.Thread(target=process_grid_section, args=(x, x + x_step, y, y + y_step, api_key)) #Create a section of the grid for each thread
         threads.append(thread)
         thread.start()
         column_counter += 1
-    dict_to_csv(businesses_dict)
+    print(row_counter)
+    if row_counter % 10 == 0: # Write to CSV every 10 rows and wait for threads to finish
+        dict_to_csv(businesses_dict)
+        for thread in threads:
+            thread.join()
+            threads = []
     row_counter += 1
 
-# Wait for all threads to finish
+# Wait for all threads to finish in case they haven't finished yet
 for thread in threads:
     thread.join()
     print(f"{thread} finished")
 
 print("All threads completed. Writing to CSV...")
-dict_to_csv(businesses_dict)
+dict_to_csv(businesses_dict) # Write to CSV one last time
 print("Processing complete. CSV file created successfully.")
