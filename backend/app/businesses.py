@@ -97,10 +97,10 @@ def data_to_dict(data):
 
 # Function to write the dictionary to a CSV file
 def dict_to_csv(dict):
-    with open('businesses.csv', 'w', encoding="utf-8") as file:
-        file.write("id,name,latitude,longitude,country,state,city,district,neighbourhood,suburb,street,postcode,address,categories\n")
+    with open('backend/app/businesses.csv', 'w', encoding="utf-8") as file:
+        file.write("id,name,latitude,longitude,country,state,city,district,neighbourhood,suburb,street,postcode,categories\n")
         for business in dict.values():
-            file.write(f"{business['id']},{business['name']},{business['latitude']},{business['longitude']},{business['country']},{business['state']},{business['city']},{business['district']},{business['neighbourhood']},{business['suburb']},{business['street']},{business['postcode']},{business['address']},{business['categories']}\n")
+            file.write(f"{business['id']},{business['name']},{business['latitude']},{business['longitude']},{business['country']},{business['state']},{business['city']},{business['district']},{business['neighbourhood']},{business['suburb']},{business['street']},{business['postcode']},{business['categories']}\n")
     return "CSV file created successfully"
 
 # Thread function to process a portion of the grid
