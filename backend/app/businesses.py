@@ -4,10 +4,12 @@ from dotenv import load_dotenv
 import os
 import csv
 import numpy as np
+import threading
 
 load_dotenv()
 
-api_key = os.getenv('API_KEY_GEOAPIFY') # API key for Geoapify, get yours at https://myprojects.geoapify.com/ and insert it in the .env file 
+# List of API keys
+api_keys_list = [os.getenv(f'API_KEY_GEOAPIFY{i}') for i in range(16)]
 
 api_url = "https://api.geoapify.com/v2/places?categories=commercial&filter=circle:"
 
@@ -15,8 +17,7 @@ radius_meters = 2000
 
 results_number = 500
 
-#The four furthest points in the community of Madrid, used to create a bounding box for the search
-
+# Coordinates for the bounding box
 furthest_north = 41.16570922250841
 
 furthest_south = 39.884619908455534
@@ -27,49 +28,42 @@ furthest_east = -3.0529962851916252
 
 steps = 200
 
-x_step = (furthest_east-furthest_west)/steps
-y_step = (furthest_north-furthest_south)/steps
+x_step = (furthest_east - furthest_west) / steps
+
+y_step = (furthest_north - furthest_south) / steps
 
 businesses_dict = {}
 
-counter = 0
+semaphore = threading.Semaphore(16)
 
+lock = threading.Lock()
 
-#Coordinates corresponding to IE University's Maria de Molina campus
-longitude = -3.681917087641409
-latitude = 40.437654856444254
-
-print(api_key)
-
-def get_businesses(lon, lat): #Function to get businesses from Geoapify 
+# Function to get businesses from Geoapify
+def get_businesses(lon, lat, api_key):
     url = f"{api_url}{lon},{lat},{radius_meters}&bias=proximity:{lon},{lat}&limit={results_number}&apiKey={api_key}"
-    response = requests.get(url)
-    data = response.json()
-    return data
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"Request error at lon: {lon}, lat: {lat} - {e}")
+        return {}
 
-def data_to_dict(data): #Function to add the data to a dictionary
-    businesses = data['features']
+# Function to add the data to a dictionary
+def data_to_dict(data):
+    businesses = data.get('features', [])
+    result_dict = {}
     for business in businesses:
-        # Check if the business is in Spain (in case the area covered by the circle includes other countries) and if certain information is present
-        if "country" in business["properties"] and business["properties"]["country"] == "Spain" and "name" in business['properties'] and "postcode" in business['properties'] and "categories" in business['properties']:
-            # Check if less crucial information is present and assign an empty string if it is not
-            if "neighbourhood" not in business['properties']:
-                business['properties']['neighbourhood'] = ""
-            if "suburb" not in business['properties']:
-                business['properties']['suburb'] = ""
-            if "street" not in business['properties']:
-                business['properties']['street'] = ""
-            if "district" not in business['properties']:
-                business['properties']['district'] = ""
-            if "city" not in business['properties']:
-                business['properties']['city'] = ""
-            if "state" not in business['properties']:
-                business['properties']['state'] = ""
-            if "postcode" not in business['properties']:
-                business['properties']['postcode'] = ""
-            if "formatted" not in business['properties']:
-                business['properties']['formatted'] = ""
-            # Assign the information to variables
+        if "country" in business["properties"] and business["properties"]["country"] == "Spain" and business["properties"]["state"] == "Community of Madrid" and "name" in business['properties'] and "postcode" in business['properties'] and "categories" in business['properties']:
+            business['properties'].setdefault('neighbourhood', "")
+            business['properties'].setdefault('suburb', "")
+            business['properties'].setdefault('street', "")
+            business['properties'].setdefault('district', "")
+            business['properties'].setdefault('city', "")
+            business['properties'].setdefault('state', "")
+            business['properties'].setdefault('postcode', "")
+            
             name = business['properties']['name']
             id = business['properties']['datasource']['raw']['osm_id']
             longitude = business['geometry']['coordinates'][0]
@@ -82,10 +76,9 @@ def data_to_dict(data): #Function to add the data to a dictionary
             suburb = business['properties']['suburb']
             street = business['properties']['street']
             postcode = business['properties']['postcode']
-            address = business['properties']['formatted']
             categories = business['properties']['categories']
-            # Add the information to the dictionary
-            businesses_dict[id] = {
+            
+            result_dict[id] = {
                 'id': id,
                 'name': name,
                 'latitude': latitude,
@@ -98,33 +91,58 @@ def data_to_dict(data): #Function to add the data to a dictionary
                 'suburb': suburb,
                 'street': street,
                 'postcode': postcode,
-                'address': address,
                 'categories': categories
             }
-    return businesses_dict
+    return result_dict
 
-def dict_to_csv(dict): #Function to write the inner dictionary to a CSV file
-    with open('businesses.csv', 'w') as file:
+# Function to write the dictionary to a CSV file
+def dict_to_csv(dict):
+    with open('businesses.csv', 'w', encoding="utf-8") as file:
         file.write("id,name,latitude,longitude,country,state,city,district,neighbourhood,suburb,street,postcode,address,categories\n")
-        for business in dict:
-            file.write(f"{dict[business]['id']},{dict[business]['name']},{dict[business]['latitude']},{dict[business]['longitude']},{dict[business]['country']},{dict[business]['state']},{dict[business]['city']},{dict[business]['district']},{dict[business]['neighbourhood']},{dict[business]['suburb']},{dict[business]['street']},{dict[business]['postcode']},{dict[business]['address']},{dict[business]['categories']}\n")
-    return "CSV file created successfully"    
+        for business in dict.values():
+            file.write(f"{business['id']},{business['name']},{business['latitude']},{business['longitude']},{business['country']},{business['state']},{business['city']},{business['district']},{business['neighbourhood']},{business['suburb']},{business['street']},{business['postcode']},{business['address']},{business['categories']}\n")
+    return "CSV file created successfully"
 
-for y in np.arange(furthest_north, furthest_south, -y_step):
-    x_counter = 0
+# Thread function to process a portion of the grid
+def process_grid_section(x_start, x_end, y_start, y_end, api_key):
+    global businesses_dict
+    local_dict = {}
+    try:
+        for y in np.arange(y_start, y_end, y_step):
+            for x in np.arange(x_start, x_end, x_step):
+                business_data = get_businesses(x, y, api_key)
+                local_dict.update(data_to_dict(business_data))
+        with lock:
+            businesses_dict.update(local_dict)
+    except Exception as e:
+        print(f"Error processing section: x[{x_start}, {x_end}], y[{y_start}, {y_end}] - {e}")
+    finally:
+        semaphore.release()
+
+# Create and start threads
+threads = []
+api_key_index = 0
+
+row_counter = 1
+
+for y in np.arange(furthest_south, furthest_north, y_step):
+    column_counter = 0
     for x in np.arange(furthest_west, furthest_east, x_step):
-        business_data = get_businesses(x, y)
-        businesses_dict.update(data_to_dict(business_data))
-        x_counter += 1
-        print(f"Column {x_counter} done")
-    counter += 1
-    print(f"Row {counter} done")
+        semaphore.acquire()
+        api_key = api_keys_list[api_key_index % len(api_keys_list)]
+        api_key_index += 1
+        thread = threading.Thread(target=process_grid_section, args=(x, x + x_step, y, y + y_step, api_key))
+        threads.append(thread)
+        thread.start()
+        column_counter += 1
+    dict_to_csv(businesses_dict)
+    row_counter += 1
+
+# Wait for all threads to finish
+for thread in threads:
+    thread.join()
+    print(f"{thread} finished")
+
+print("All threads completed. Writing to CSV...")
 dict_to_csv(businesses_dict)
-
-
-
-
-# business_data = get_businesses(longitude, latitude)
-# business_dict = json_to_csv(business_data)
-
-
+print("Processing complete. CSV file created successfully.")
