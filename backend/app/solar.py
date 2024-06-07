@@ -1,6 +1,20 @@
 import requests
 import json
 
+
+'''
+# Coordinates for the Community of Madrid, create two nested for loops that can iterate over the latitude and longitude values to fetch solar radiation data for each location.
+furthest_north = 41.16570922250841
+
+furthest_south = 39.884619908455534
+
+furthest_west = -4.578508218989555
+
+furthest_east = -3.0529962851916252
+
+'''
+
+
 # Function to fetch solar radiation data using MRcalc endpoint
 def fetch_solar_radiation(lat, lon, horirrad):
     """
