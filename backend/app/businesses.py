@@ -24,6 +24,17 @@ furthest_west = -4.578508218989555
 
 furthest_east = -3.0529962851916252
 
+#Approximate coordinates for the city of Madrid
+
+#furthest_north = 40.64379259948183
+
+#furthest_south = 40.31261487936527
+
+#furthest_west = -3.8347824802642663
+
+#furthest_east = -3.5251321045585655
+
+
 # Number of steps to divide the grid into
 steps = 200
 
@@ -54,7 +65,7 @@ def data_to_dict(data):
     businesses = data.get('features', [])
     result_dict = {}
     for business in businesses:
-        if "country" in business["properties"] and business["properties"]["country"] == "Spain" and business["properties"]["state"] == "Community of Madrid" and "name" in business['properties'] and "postcode" in business['properties'] and "categories" in business['properties']:
+        if "country" in business["properties"] and business["properties"]["country"] == "Spain" and business["properties"]["city"] == "Madrid" and "name" in business['properties'] and "postcode" in business['properties'] and "categories" in business['properties']:
             business['properties'].setdefault('neighbourhood', "")
             business['properties'].setdefault('suburb', "")
             business['properties'].setdefault('street', "")
@@ -125,7 +136,7 @@ api_key_index = 0
 row_counter = 1
 
 for y in np.arange(furthest_south, furthest_north, y_step):
-    column_counter = 0
+    #column_counter = 0
     for x in np.arange(furthest_west, furthest_east, x_step):
         semaphore.acquire() 
         api_key = api_keys_list[api_key_index % len(api_keys_list)] # Use a different API key for each thread
@@ -133,7 +144,7 @@ for y in np.arange(furthest_south, furthest_north, y_step):
         thread = threading.Thread(target=process_grid_section, args=(x, x + x_step, y, y + y_step, api_key)) #Create a section of the grid for each thread
         threads.append(thread)
         thread.start()
-        column_counter += 1
+        #column_counter += 1
     print(row_counter)
     if row_counter % 10 == 0: # Write to CSV every 10 rows and wait for threads to finish
         dict_to_csv(businesses_dict)
