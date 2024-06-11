@@ -9,7 +9,7 @@ load_dotenv()
 # List of API keys
 api_keys_list = [os.getenv(f'API_KEY_GEOAPIFY{i}') for i in range(21)]
 
-api_url = "https://api.geoapify.com/v2/places?categories=commercial&filter=circle:"
+api_url = "https://api.geoapify.com/v2/places?categories=production&filter=circle:"
 
 radius_meters = 2000
 
@@ -36,7 +36,7 @@ furthest_east = -3.5251321045585655
 
 
 # Number of steps to divide the grid into
-steps = 100
+steps = 80
 
 x_step = (furthest_east - furthest_west) / steps
 
@@ -107,10 +107,10 @@ def data_to_dict(data):
 
 # Function to write the dictionary to a CSV file
 def dict_to_csv(dict):
-    with open('backend/app/businesses.csv', 'w', encoding="utf-8") as file:
+    with open('backend/app/production.csv', 'w', encoding="utf-8") as file:
         file.write("id,name,latitude,longitude,country,state,city,district,neighbourhood,suburb,street,postcode,categories\n")
         for business in dict.values():
-            file.write(f"{business['id']},{business['name']},{business['latitude']},{business['longitude']},{business['country']},{business['state']},{business['city']},{business['district']},{business['neighbourhood']},{business['suburb']},{business['street']},{business['postcode']},{str("["+"; ".join(business['categories'])+"]")}\n")
+            file.write(f"\"{business['id']}\",\"{business['name']}\",\"{business['latitude']}\",\"{business['longitude']}\",\"{business['country']}\",\"{business['state']}\",\"{business['city']}\",\"{business['district']}\",\"{business['neighbourhood']}\",\"{business['suburb']}\",\"{business['street']}\",\"{business['postcode']}\",\"{(business['categories'])}\"\n")
     return "CSV file created successfully"
 
 # Thread function to process a portion of the grid
