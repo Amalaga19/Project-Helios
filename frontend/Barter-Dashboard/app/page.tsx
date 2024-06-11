@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { title, subtitle } from "@/components/primitives";
-import { Card, CardHeader, CardBody, CardFooter, Image } from "@nextui-org/react";
+import { Card, CardHeader, Image } from "@nextui-org/react";
 
 export default function Home() {
   const [activeCard, setActiveCard] = useState(null);
@@ -15,19 +15,19 @@ export default function Home() {
     {
       title: "The Why",
       subtitle: "Understanding the need",
-      img: "https://via.placeholder.com/300",
+      img: "/pictures/bater-building.jpg", // Direct reference
       content: "Detailed explanation about the need for this project."
     },
     {
       title: "The What",
       subtitle: "Project Overview",
-      img: "https://via.placeholder.com/300",
+      img: "/pictures/barter-satellite.jpg", // Direct reference
       content: "Detailed project overview and scope."
     },
     {
       title: "The How",
       subtitle: "Implementation Strategy",
-      img: "https://via.placeholder.com/300",
+      img: "/pictures/bater-car.jpg", // Direct reference
       content: "Steps and strategies for implementing the project."
     }
   ];
@@ -59,8 +59,8 @@ export default function Home() {
             onPress={() => handleCardClick(index)}
           >
             <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-              <p className="text-tiny text-white/60 uppercase font-bold">{card.title}</p>
-              <h4 className="text-white font-medium text-large">{card.subtitle}</h4>
+              <p className="text-tiny text-black uppercase font-bold">{card.title}</p>
+              <h4 className="text-black font-medium text-large">{card.subtitle}</h4>
             </CardHeader>
             <Image
               removeWrapper
