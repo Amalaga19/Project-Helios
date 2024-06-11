@@ -16,27 +16,27 @@ radius_meters = 2000
 results_number = 500
 
 # Coordinates for the bounding box - The approxiate coordinates for the furthest points north, south, east and west of the Community of Madrid
-furthest_north = 41.16570922250841
+#furthest_north = 41.16570922250841
 
-furthest_south = 39.884619908455534
+#furthest_south = 39.884619908455534
 
-furthest_west = -4.578508218989555
+#furthest_west = -4.578508218989555
 
-furthest_east = -3.0529962851916252
+#furthest_east = -3.0529962851916252
 
 #Approximate coordinates for the city of Madrid
 
-#furthest_north = 40.64379259948183
+furthest_north = 40.64379259948183
 
-#furthest_south = 40.31261487936527
+furthest_south = 40.31261487936527
 
-#furthest_west = -3.8347824802642663
+furthest_west = -3.8347824802642663
 
-#furthest_east = -3.5251321045585655
+furthest_east = -3.5251321045585655
 
 
 # Number of steps to divide the grid into
-steps = 200
+steps = 100
 
 x_step = (furthest_east - furthest_west) / steps
 
@@ -101,7 +101,7 @@ def data_to_dict(data):
                 'suburb': suburb,
                 'street': street,
                 'postcode': postcode,
-                'categories': categories
+                'categories': categories,
             }
     return result_dict
 
@@ -110,7 +110,7 @@ def dict_to_csv(dict):
     with open('backend/app/businesses.csv', 'w', encoding="utf-8") as file:
         file.write("id,name,latitude,longitude,country,state,city,district,neighbourhood,suburb,street,postcode,categories\n")
         for business in dict.values():
-            file.write(f"{business['id']},{business['name']},{business['latitude']},{business['longitude']},{business['country']},{business['state']},{business['city']},{business['district']},{business['neighbourhood']},{business['suburb']},{business['street']},{business['postcode']},{business['categories']}\n")
+            file.write(f"{business['id']},{business['name']},{business['latitude']},{business['longitude']},{business['country']},{business['state']},{business['city']},{business['district']},{business['neighbourhood']},{business['suburb']},{business['street']},{business['postcode']},{str("["+"; ".join(business['categories'])+"]")}\n")
     return "CSV file created successfully"
 
 # Thread function to process a portion of the grid
