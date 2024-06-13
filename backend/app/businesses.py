@@ -9,7 +9,7 @@ load_dotenv()
 # List of API keys
 api_keys_list = [os.getenv(f'API_KEY_GEOAPIFY{i}') for i in range(21)]
 
-api_url = "https://api.geoapify.com/v2/places?categories=production&filter=circle:"
+api_url = "https://api.geoapify.com/v2/places?categories=catering&filter=circle:"
 
 radius_meters = 2000
 
@@ -107,7 +107,7 @@ def data_to_dict(data):
 
 # Function to write the dictionary to a CSV file
 def dict_to_csv(dict):
-    with open('backend/app/production.csv', 'w', encoding="utf-8") as file:
+    with open('backend/app/catering.csv', 'w', encoding="utf-8") as file:
         file.write("id,name,latitude,longitude,country,state,city,district,neighbourhood,suburb,street,postcode,categories\n")
         for business in dict.values():
             file.write(f"\"{business['id']}\",\"{business['name']}\",\"{business['latitude']}\",\"{business['longitude']}\",\"{business['country']}\",\"{business['state']}\",\"{business['city']}\",\"{business['district']}\",\"{business['neighbourhood']}\",\"{business['suburb']}\",\"{business['street']}\",\"{business['postcode']}\",\"{(business['categories'])}\"\n")
@@ -151,6 +151,7 @@ for y in np.arange(furthest_south, furthest_north, y_step):
         for thread in threads:
             thread.join()
             threads = []
+            print(f"{thread} finished")
     row_counter += 1
 
 # Wait for all threads to finish in case they haven't finished yet
