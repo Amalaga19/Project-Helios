@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { title, subtitle } from "@/components/primitives";
-import { Card, CardHeader, CardBody, CardFooter, Image } from "@nextui-org/react";
+import { Card, CardHeader, Image } from "@nextui-org/react";
 
 export default function Home() {
   const [activeCard, setActiveCard] = useState(null);
@@ -15,30 +15,30 @@ export default function Home() {
     {
       title: "The Why",
       subtitle: "Understanding the need",
-      img: "https://via.placeholder.com/300",
+      img: "/pictures/bater-building.jpg", // Direct reference
       content: "Detailed explanation about the need for this project."
     },
     {
       title: "The What",
       subtitle: "Project Overview",
-      img: "https://via.placeholder.com/300",
+      img: "/pictures/barter-satellite.jpg", // Direct reference
       content: "Detailed project overview and scope."
     },
     {
       title: "The How",
       subtitle: "Implementation Strategy",
-      img: "https://via.placeholder.com/300",
+      img: "/pictures/bater-car.jpg", // Direct reference
       content: "Steps and strategies for implementing the project."
     }
   ];
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-12 px-4 md:py-16 md:px-8">
-      <div className="w-full max-w-screen-md text-center">
-        <h1 className={title({ class: "lg:text-7xl md:text-6xl leading-tight mb-2" })}>
-          Project Helios - 
+      <div className="w-full max-w-screen-md text-center" style={{ overflow: 'visible' }}>
+        <h1 className={title({ class: "lg:text-7xl md:text-6xl mb-2 block" })} style={{ verticalAlign: 'bottom' }}>
+          Project Helios
         </h1>
-        <h1 className={title({ color: "violet", class: "lg:text-7xl md:text-6xl leading-tight mt-2" })}>
+        <h1 className={title({ color: "violet", class: "lg:text-7xl md:text-6xl mt-2  block" })} style={{ verticalAlign: 'bottom' }}>
           Lighting up Madrid&nbsp;
         </h1>
         <br />
@@ -50,6 +50,7 @@ export default function Home() {
         </h2>
       </div>
 
+
       <div className="max-w-[900px] gap-8 grid grid-cols-12 px-8 mt-8">
         {cards.map((card, index) => (
           <Card
@@ -59,8 +60,8 @@ export default function Home() {
             onPress={() => handleCardClick(index)}
           >
             <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-              <p className="text-tiny text-white/60 uppercase font-bold">{card.title}</p>
-              <h4 className="text-white font-medium text-large">{card.subtitle}</h4>
+              <h3 className="text-black uppercase font-bold">{card.title}</h3>
+              <h4 className="text-black font-medium text-large">{card.subtitle}</h4>
             </CardHeader>
             <Image
               removeWrapper
