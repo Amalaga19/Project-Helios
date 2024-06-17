@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { title, subtitle } from "@/components/primitives";
+import { title, subtitle } from "../components/primitives";
 import { Card, CardHeader, Image } from "@nextui-org/react";
 
 export default function Home() {
-  const [activeCard, setActiveCard] = useState(null);
+  const [activeCard, setActiveCard] = useState<number | null>(null);
 
-  const handleCardClick = (index) => {
+  const handleCardClick = (index: number) => {
     setActiveCard(index === activeCard ? null : index);
   };
 
