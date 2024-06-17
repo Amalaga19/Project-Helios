@@ -1,11 +1,9 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { TableWrapper } from "./table";
-import { CardAgents } from "./card-agents";
 import { CardTransactions } from "./card-transactions";
 import NextLink from "next/link";
-import { Suspense } from 'react';
 
 const MapComponent = dynamic(() => import('./Map'), {
   suspense: true,
@@ -42,7 +40,7 @@ export const Content = () => (
     <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0 max-w-[90rem] mx-auto gap-3">
       <div className="flex flex-wrap justify-between">
         <h3 className="text-center text-2xl font-bold">Latest Users</h3>
-        <NextLink href="/accounts" passHref>
+        <NextLink href="/accounts" legacyBehavior>
           <a className="cursor-pointer hover:underline focus:outline-none text-primary">
             View All
           </a>
