@@ -4,11 +4,8 @@ import os
 import requests
 import argon2
 from argon2 import PasswordHasher
+from flask_cors import CORS
 
-
-
-
-load_dotenv()
 
 geoapify_url = "https://api.geoapify.com/v2/places"
 
@@ -24,9 +21,12 @@ main_categories = ['commercial', 'catering', 'production', 'service', 'office']
 load_dotenv()
 
 app = Flask(__name__)
+CORS = CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-
+UN = "" #(Placeholder for database username)
+PW = "" #(Placeholder for database password)
+DSN = "" #(Placeholder for database DSN)
 
 def set_category_list():
     pass

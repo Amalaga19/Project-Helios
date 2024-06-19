@@ -1,1 +1,27 @@
+# Ignore compiled binaries
+*.exe
+*.dll
+
+# Ignore build output directories
+/bin/
+/obj/
+
+# Ignore package files
+*.nupkg
+*.zip
+
+# Ignore IDE and editor files
+.vscode/
+.idea/
+*.sln
+*.csproj.user
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+
+# Ignore sensitive or personal files
+secrets.txt
+credentials.json
+.env
 backend/.env
