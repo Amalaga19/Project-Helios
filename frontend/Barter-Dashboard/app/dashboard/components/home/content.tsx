@@ -12,9 +12,9 @@ const MapComponent = dynamic(() => import('./Map'), {
 });
 
 const MapSection = () => (
-  <div className="h-full flex flex-col gap-2">
+  <div className="h-full w-full flex flex-col gap-2">
     <h3 className="text-2xl font-bold">Business Map</h3>
-    <div className="w-full bg-default-50 shadow-lg rounded-2xl p-6">
+    <div className="h-full w-full bg-default-50 shadow-lg rounded-2xl p-6">
       <Suspense fallback={<div>Loading...</div>}>
         <MapComponent />
       </Suspense>
