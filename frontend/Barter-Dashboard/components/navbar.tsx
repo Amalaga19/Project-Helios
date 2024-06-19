@@ -61,18 +61,16 @@ export const Navbar = () => {
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem className="hidden md:flex">
-          <Link href={siteConfig.navItems.find(item => item.label === 'Login')?.href || '/login'}>
-            <Button
-              isExternal
-              as={Link}
-              className="text-sm font-normal text-default-600 bg-default-100"
-              href={siteConfig.links.sponsor}
-              startContent={<LoginIcon className="text-danger" />}
-              variant="flat"
-            >
-              Log in
-            </Button>
-          </Link> 
+          <NextLink href={siteConfig.navItems.find(item => item.label === 'Login')?.href || '/login'} passHref>
+              <Button
+                as="a"
+                className="text-sm font-normal text-default-600 bg-default-100"
+                startContent={<LoginIcon className="text-danger" />}
+                variant="flat"
+              >
+                Log in
+              </Button>
+          </NextLink>
         </NavbarItem>
       </NavbarContent>
 

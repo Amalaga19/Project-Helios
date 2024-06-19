@@ -15,19 +15,19 @@ export default function Home() {
     {
       title: "The Why",
       subtitle: "Understanding the need",
-      img: "/pictures/bater-building.jpg", // Direct reference
+      img: "/pictures/bater-building.jpg",
       content: "Detailed explanation about the need for this project."
     },
     {
       title: "The What",
       subtitle: "Project Overview",
-      img: "/pictures/barter-satellite.jpg", // Direct reference
+      img: "/pictures/barter-satellite.jpg",
       content: "Detailed project overview and scope."
     },
     {
       title: "The How",
       subtitle: "Implementation Strategy",
-      img: "/pictures/bater-car.jpg", // Direct reference
+      img: "/pictures/bater-car.jpg",
       content: "Steps and strategies for implementing the project."
     }
   ];
@@ -35,10 +35,10 @@ export default function Home() {
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-12 px-4 md:py-16 md:px-8">
       <div className="w-full max-w-screen-md text-center" style={{ overflow: 'visible' }}>
-      <h1 className={title({ class: "lg:text-7xl md:text-6xl mb-2 block" })} style={{ verticalAlign: 'top', lineHeight: '1.2' }}>
-      Project Helios
-    </h1>
-    <h1 className={title({ color: "violet", class: "lg:text-7xl md:text-6xl mt-2 block" })} style={{ verticalAlign: 'top', lineHeight: '1.2' }}>
+        <h1 className={title({ class: "lg:text-7xl md:text-6xl mb-2 block" })} style={{ verticalAlign: 'top', lineHeight: '1.2' }}>
+          Project Helios
+        </h1>
+        <h1 className={title({ color: "violet", class: "lg:text-7xl md:text-6xl mt-2 block" })} style={{ verticalAlign: 'top', lineHeight: '1.2' }}>
           Lighting up Madrid&nbsp;
         </h1>
         <h2 className={subtitle({ class: "mt-2 leading-relaxed" })}>
@@ -48,8 +48,6 @@ export default function Home() {
           enabling efficient widespread adoption of renewable energy.
         </h2>
       </div>
-
-
       <div className="max-w-[900px] gap-8 grid grid-cols-12 px-8 mt-8">
         {cards.map((card, index) => (
           <Card
@@ -79,3 +77,5 @@ export default function Home() {
     </section>
   );
 }
+
+Home.getLayout = (page: React.ReactNode) => <MainLayout>{page}</MainLayout>;
