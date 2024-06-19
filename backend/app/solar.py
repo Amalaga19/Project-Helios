@@ -1,51 +1,13 @@
 import requests
-import json
+import csv
 
-
-'''
-# Coordinates for the Community of Madrid, create two nested for loops that can iterate over the latitude and longitude values to fetch solar radiation data for each location.
-furthest_north = 41.16570922250841
-
-furthest_south = 39.884619908455534
-
-furthest_west = -4.578508218989555
-
-furthest_east = -3.0529962851916252
-
-'''
-
-
-# Function to fetch solar radiation data using MRcalc endpoint
-def fetch_solar_radiation(lat, lon, horirrad):
-    """
-    Fetches solar radiation data from the MRcalc endpoint.
-
-    Args:
-        lat (float): Latitude of the location.
-        lon (float): Longitude of the location.
-        horirrad (int): Option to include horizontal radiation (0 or 1).
-
-    Returns:
-        dict: JSON data containing solar radiation information.
-            Example:
-            {
-                "outputs": {
-                    "monthly": [
-                        {
-                            "year": 2005,
-                            "month": 1,
-                            "H(h)_m": 1.2
-                        },
-                        ...
-                    ]
-                }
-            }
-    """
+def fetch_solar_radiation_csv(lat, lon, horirrad, output_file):
     base_url = "https://re.jrc.ec.europa.eu/api/MRcalc"
+    # Parameters for  the API request
     params = {
         "lat": lat,
         "lon": lon,
-        "horirrad": horirrad, # option to include horizontal radiation
+        "horirrad": horirrad,
         "startyear": 2005,
         "endyear": 2016,
         "outputformat": "json",
@@ -55,38 +17,69 @@ def fetch_solar_radiation(lat, lon, horirrad):
     
     if response.status_code == 200:
         data = response.json()
-        return data
+        
+        # Print the structure of the data to understand its format
+        print("Data structure:", type(data))
+        for key in data:
+            print(f"Key: {key}, Type: {type(data[key])}")
+
+        # Check if 'outputs' and 'monthly' keys exist in the data
+        if 'outputs' in data and 'monthly' in data['outputs']:
+            monthly_data = data['outputs']['monthly']
+            
+            # Open CSV file for writing
+            with open(output_file, 'w', newline='') as file:
+                writer = csv.writer(file)
+                
+                # Write the header row to the CSV
+                writer.writerow(["year", "month", "H(h)_m"])
+                
+                # Write the data rows to the CSV
+                for entry in monthly_data:
+                    writer.writerow([entry.get('year'), entry.get('month'), entry.get('H(h)_m')])
+            
+            print(f"Data fetched and saved to {output_file} successfully.")
+        else:
+            print("Error: 'outputs' or 'monthly' key not found in the response.")
     else:
         print("Error:", response.status_code)
         print("Response Content:", response.content.decode('utf-8'))
-        return None
 
-# Set parameters
-latitude = 52.52  # example latitude (Berlin)
-longitude = 13.405  # example longitude (Berlin)
-horirrad = 1  # horizontal radiation
+latitude = 40.437974990337075
+longitude = -3.682171303527823
+# Horizontal irradiation flag (1 for including, 0 for excluding)
+horirrad = 1
 
-# Fetch data
-solar_data = fetch_solar_radiation(latitude, longitude, horirrad)
+output_file = 'solar_radiation_data.csv'
 
-# Check if data was fetched successfully
-if solar_data:
-    with open('solar_radiation_data.json', 'w') as json_file:
-        json.dump(solar_data, json_file, indent=4)
-    
-    print("Data fetched and saved successfully.")
-else:
-    print("Failed to fetch data.")
+fetch_solar_radiation_csv(latitude, longitude, horirrad, output_file)
 
+def calculate_average_irradiation(csv_file):
+    total_irradiation = 0
+    count = 0
 
-with open('solar_radiation_data.json', 'r') as json_file:
-    data = json.load(json_file)
+    with open(csv_file, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header row
 
-# Save data to a CSV file
-with open('solar_radiation_data.csv', 'w') as csv_file:
-    csv_file.write('Year,Month,Irradiation (kWh/m²)\n')
-    for item in data['outputs']['monthly']:
-        csv_file.write(f"{item['year']},{item['month']},{item['H(h)_m']}\n")
+        for row in reader:
+            if len(row) == 3:
+                try:
+                    # Convert the irradiation value to float and add it to the total
+                    irradiation_value = float(row[2])
+                    total_irradiation += irradiation_value
+                    count += 1
+                except ValueError as e:
+                    # Skip rows with invalid data and print an error message
+                    print(f"Skipping row due to error: {e}, row content: {row}")
 
-print("JSON data converted to CSV successfully.")
+    # Calculate and return the average irradiation
+    if count == 0:
+        return 0
 
+    return total_irradiation / count
+
+# Calculate the average irradiation from the CSV data
+average_irradiation = calculate_average_irradiation(output_file)
+
+print(f"Average Irradiation (kWh/m²): {average_irradiation:.2f}")
