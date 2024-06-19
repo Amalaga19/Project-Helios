@@ -6,6 +6,8 @@ import argon2
 from argon2 import PasswordHasher
 
 
+
+
 load_dotenv()
 
 geoapify_url = "https://api.geoapify.com/v2/places"
@@ -29,16 +31,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 def set_category_list():
     pass
 
-# Define routes
-@app.route('/')
-def home():
-    return jsonify(message="Hello, Barter Energy!")
-
-@app.route('/get_places')
-def get_places():
-    pass
-
-#Below the authentication routes and hashing I used for my capstone, we can modify them later as per our database schema -Andres
+#Below the authentication hashing I used for my capstone, we can modify them later as per our database schema -Andres
 def hash_password(password): #Hashes the password so that it is stored securely in the database
     ph = PasswordHasher()
     return ph.hash(password)
@@ -51,6 +44,69 @@ def verify_password(hashed_password, password): #checks the password against the
     except argon2.exceptions.VerifyMismatchError:
         return False
 
+def get_solar_data_average(lon, lat):
+    radiation_total = 0
+    count = 0
+    average = 0
+    base_url = "https://re.jrc.ec.europa.eu/api/MRcalc"
+    # Parameters for the API request
+    params = {
+        "lat": lat,
+        "lon": lon,
+        "horirrad": 1,
+        "startyear": 2005,
+        "endyear": 2016,
+        "outputformat": "json",
+    }
+    response = requests.get(base_url, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        if 'outputs' in data and 'monthly' in data['outputs']:
+            monthly_data = data['outputs']['monthly']
+            for entry in monthly_data:
+                if 'H(h)_m' in entry:
+                    try:
+                        # Convert the radiation value to float
+                        radiation_value = float(entry['H(h)_m'])
+                        radiation_total += radiation_value
+                        count += 1
+                    except ValueError as e:
+                        # Skip entries with invalid data and print an error message
+                        print(f"Skipping entry due to error: {e}, entry content: {entry}")
+            average = radiation_total / count
+            
+            if count==0:
+                return 0
+            
+            return average
+        else:
+            print("Error: 'outputs' or 'monthly' key not found in the response.")
+            return None
+    else:
+        print("Error:", response.status_code)
+        print("Response Content:", response.content.decode('utf-8'))
+        return None
+
+
+
+
+# Define routes
+@app.route('/')
+def home():
+    return jsonify(message="Hello, Barter Energy!")
+
+@app.route('/get_places')
+def get_places():
+    pass
+
+@app.route('/get_solar')
+def get_solar(lon, lat):
+    lon = round(lon, 3)
+    lat = round(lat, 3)
+    radiation_average = get_solar_data_average(lon, lat)
+    return jsonify(radiation = f"{radiation_average:.2f}")
+
+#Login-Logout routes I used for Capstone - Andres
 
 @app.route('/login', methods=['POST', 'OPTIONS'])
 def login(): #This route is used to log in the user
