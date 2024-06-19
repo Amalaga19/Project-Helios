@@ -12,13 +12,11 @@ import { Link } from "@nextui-org/link";
 import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
-import { FaSignInAlt } from "react-icons/fa";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "../components/theme-switch";
 import {
   GithubIcon,
-  HeartFilledIcon,
   Logo,
   LoginIcon
 } from "../components/icons";
@@ -63,16 +61,18 @@ export const Navbar = () => {
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem className="hidden md:flex">
-          <Button
-            isExternal
-            as={Link}
-            className="text-sm font-normal text-default-600 bg-default-100"
-            href={siteConfig.links.sponsor}
-            startContent={<LoginIcon className="text-danger" />}
-            variant="flat"
-          >
-            Log in
-          </Button>
+          <Link href={siteConfig.navItems.find(item => item.label === 'Login')?.href || '/login'}>
+            <Button
+              isExternal
+              as={Link}
+              className="text-sm font-normal text-default-600 bg-default-100"
+              href={siteConfig.links.sponsor}
+              startContent={<LoginIcon className="text-danger" />}
+              variant="flat"
+            >
+              Log in
+            </Button>
+          </Link> 
         </NavbarItem>
       </NavbarContent>
 
