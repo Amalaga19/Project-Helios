@@ -37,7 +37,6 @@ def fetch_solar_radiation_csv(lat, lon, horirrad, output_file):
                 # Write the data rows to the CSV
                 for entry in monthly_data:
                     writer.writerow([entry.get('year'), entry.get('month'), entry.get('H(h)_m')])
-            
             print(f"Data fetched and saved to {output_file} successfully.")
         else:
             print("Error: 'outputs' or 'monthly' key not found in the response.")
