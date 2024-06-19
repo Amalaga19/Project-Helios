@@ -1,6 +1,5 @@
 import React from "react";
 import clsx from "clsx";
-import { Providers } from "../providers";
 import { fontSans } from "@/config/fonts";
 
 export default function SimpleLayout({ children }: { children: React.ReactNode }) {

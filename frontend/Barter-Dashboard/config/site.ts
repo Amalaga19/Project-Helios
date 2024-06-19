@@ -19,11 +19,18 @@ export const siteConfig = {
     {
       label: "Dashboard",
       href: "/dashboard",
-    }
-    ,
+    },
     {
       label: "Login",
       href: "/login",
+    },
+    {
+      label: "Signup",
+      href: "/signup",
+    },
+    {
+      label: "Userlogin",
+      href: "/userlogin",
     }
   ],
   navMenuItems: [
