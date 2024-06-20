@@ -35,14 +35,14 @@ export default function Home() {
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-12 px-4 md:py-16 md:px-8">
       <div className="w-full max-w-screen-md text-center" style={{ overflow: 'visible' }}>
-        <h1 className={title({ class: "lg:text-7xl md:text-6xl mb-2 block" })} style={{ verticalAlign: 'top', lineHeight: '1.2' }}>
+        <h1 className={title({ class: "lg:text-7xl md:text-6xl mb-2 block" })} style={{ verticalAlign: 'bottom', lineHeight: '1.2' }}>
           Project Helios
         </h1>
-        <h1 className={title({ color: "violet", class: "lg:text-7xl md:text-6xl mt-2 block" })} style={{ verticalAlign: 'top', lineHeight: '1.2' }}>
-          Lighting up Madrid&nbsp;
+        <h1 className={title({ color: "violet", class: "lg:text-7xl md:text-6xl mt-2 block" })} style={{ verticalAlign: 'bottom', lineHeight: '1.2' }}>
+          Lighting up Madrid
         </h1>
         <h2 className={subtitle({ class: "mt-2 leading-relaxed" })}>
-          Designed to identify ideal buildings for solar-powered generators in Madrid,
+          Designed to identify ideal areas for solar-powered generators in Madrid,
         </h2>
         <h2 className={subtitle({ class: "mt-2 leading-relaxed" })}>
           enabling efficient widespread adoption of renewable energy.
