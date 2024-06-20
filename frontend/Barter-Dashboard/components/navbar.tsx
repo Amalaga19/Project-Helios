@@ -17,23 +17,26 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "../components/theme-switch";
 import {
   GithubIcon,
-  Logo,
   LoginIcon
 } from "../components/icons";
+import Image from 'next/image';
 
 export const Navbar = () => {
-  
+  const filteredNavItems = siteConfig.navItems.filter(item =>
+    ["Home", "Pricing", "Team", "Dashboard"].includes(item.label)
+  );
+
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Logo />
-            <p className="font-bold text-inherit">ACME</p>
+            <Image src="/logos/Icon_logo.png" alt="Project Helios Logo" width={36} height={36} />
+            <p className="font-bold text-inherit">Project Helios</p>
           </NextLink>
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
-          {siteConfig.navItems.map((item) => (
+          {filteredNavItems.map((item) => (
             <NavbarItem key={item.href}>
               <NextLink
                 className={clsx(

@@ -2,6 +2,7 @@
 import { ReactNode } from "react";
 import { Button } from "@nextui-org/react";
 import Link from "next/link";
+import Image from 'next/image';
 
 interface LoginLayoutProps {
   children: ReactNode;
@@ -10,10 +11,11 @@ interface LoginLayoutProps {
 const LoginLayout = ({ children }: LoginLayoutProps) => {
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
-      <div className="flex flex-col justify-between bg-purple-900 text-white p-8 lg:w-8/12">
+      <div className="flex flex-col justify-between bg-white text-purple-900 p-8 lg:w-8/12">
         <nav className="flex items-center space-x-4 mb-8">
+          <Image src="/logos/Icon_logo.png" alt="Project Helios Logo" width={36} height={36} />
           <h1 className="text-2xl font-bold">
-            ChatGPT<span className="text-purple-500">●</span>
+            Project Helios<span className="text-purple-500"></span>
           </h1>
         </nav>
         <div className="flex-1 flex flex-col justify-center">
