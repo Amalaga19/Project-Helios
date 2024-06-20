@@ -10,3 +10,8 @@ seaborn
 flask_sqlalchemy
 Flask_CORS
 SQLAlchemy
+pyodbc
+fastapi
+uvicorn[standard]
+pydantic
+azure-identity
