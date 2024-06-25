@@ -1,16 +1,16 @@
 import os
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.schema import Identity
 
 db = SQLAlchemy()
 
 
-
 class Users(db.Model):
     __tablename__ = 'USERS'
-    USER_ID = db.Column(db.Integer, Identity(start = 1, cycle = False), primary_key=True)
-    USERNAME = db.Column(db.String(100), unique = True, nullable=False)
-    PASSWORD = db.Column(db.String(1000), nullable=False) #1000 characters because the password will be hashed
+    USER_ID = db.Column(db.Integer, Identity(start=1, cycle=False), primary_key=True)
+    USERNAME = db.Column(db.String(100), unique=True, nullable=False)
+    PASSWORD = db.Column(db.String(1000), nullable=False) # 1000 characters because the password will be hashed
     requests_log = db.relationship("Requests", back_populates="user")
 
     def user_dict(self):
@@ -18,7 +18,7 @@ class Users(db.Model):
     
 class Requests(db.Model):
     __tablename__ = 'REQUESTS'
-    REQUEST_ID = db.Column(db.Integer, Identity(start = 1, cycle = False), primary_key=True)
+    REQUEST_ID = db.Column(db.Integer, Identity(start=1, cycle=False), primary_key=True)
     USER_ID = db.Column(db.Integer, db.ForeignKey('USERS.USER_ID'), nullable=False)
     LONGITUDE = db.Column(db.Float, nullable=False)
     LATITUDE = db.Column(db.Float, nullable=False)
@@ -28,6 +28,8 @@ class Requests(db.Model):
     OFFICE = db.Column(db.Boolean, nullable=False)
     PRODUCTION = db.Column(db.Boolean, nullable=False)
     SERVICE = db.Column(db.Boolean, nullable=False)
+    user = db.relationship("Users", back_populates="requests_log")
+
     def request_dict(self):
         return {"id": self.REQUEST_ID, "user_id": self.USER_ID, "longitude": self.LONGITUDE, "latitude": self.LATITUDE, "date_time": self.DATE_TIME, "categories": [category for category in self.__dict__.keys() if self.__dict__[category] == True]}
 
@@ -154,3 +156,113 @@ class Places(db.Model):
 
     def place_dict(self):
         return {"id": self.PLACE_ID, "name": self.NAME, "longitude": self.LONGITUDE, "latitude": self.LATITUDE, "country": self.COUNTRY, "state": self.STATE, "city": self.CITY, "district": self.DISTRICT, "neighbourhood": self.NEIGHBOURHOOD, "suburb": self.SUBURB, "street": self.STREET, "postcode": self.POSTCODE, "categories": [category for category in self.__dict__.keys() if self.__dict__[category] == True]}
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# import pyodbc
+
+# SERVER = 'tcp:corporateproject.database.windows.net,1433'
+# DATABASE = 'CorporateProject'
+# USERNAME = 'lbarbion'
+# PASSWORD = 'Corporateproject!'
+
+# connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD}'
+
+
+
+# # Establish the connection
+# conn = pyodbc.connect(connectionString)
+
+# # Define the SQL query strings for creating the tables
+# create_users_table_query = """
+# CREATE TABLE USERS (
+#     USER_ID INT IDENTITY(1,1) PRIMARY KEY,
+#     USERNAME VARCHAR(100) UNIQUE NOT NULL,
+#     PASSWORD VARCHAR(1000) NOT NULL
+# );
+# """
+
+# create_requests_table_query = """
+# CREATE TABLE REQUESTS (
+#     REQUEST_ID INT IDENTITY(1,1) PRIMARY KEY,
+#     USER_ID INT NOT NULL,
+#     LONGITUDE FLOAT NOT NULL,
+#     LATITUDE FLOAT NOT NULL,
+#     DATE_TIME DATETIME NOT NULL,
+#     CATERING BIT NOT NULL,
+#     COMMERCIAL BIT NOT NULL,
+#     OFFICE BIT NOT NULL,
+#     PRODUCTION BIT NOT NULL,
+#     SERVICE BIT NOT NULL,
+#     FOREIGN KEY (USER_ID) REFERENCES USERS(USER_ID)
+# );
+# """
+
+# try:
+#     cursor = conn.cursor()
+    
+#     # Execute the queries to create the tables
+#     cursor.execute(create_users_table_query)
+#     cursor.execute(create_requests_table_query)
+    
+#     conn.commit()  # Commit the changes
+
+#     print("Tables created successfully.")
+    
+# except pyodbc.Error as ex:
+#     print("Error in connection: ", ex)
+# finally:
+#     if 'conn' in locals():
+#         conn.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # try:
+# #     # Establish the connection
+# #     conn = pyodbc.connect(connectionString)
+# #     cursor = conn.cursor()
+# #     # # Define the SQL query string
+# #     # SQL_QUERY = "SELECT TOP 5 id, name, latitude, longitude FROM CLEANDATA;"  # Replace with your table name
+
+# #     # cursor.execute(SQL_QUERY)
+# #     # rows = cursor.fetchall()
+    
+# #     # # Print the results
+# #     # for row in rows:
+# #     #     print(f'id: {row.id}, name: {row.name}, latitude: {row.latitude}, longitude: {row.longitude}')
+        
+# # except pyodbc.Error as ex:
+# #     print("Error in connection: ", ex)
+# # finally:
+# #     if 'conn' in locals():
+# #         conn.close()

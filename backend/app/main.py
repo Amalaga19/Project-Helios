@@ -5,13 +5,10 @@ import requests
 import argon2
 from argon2 import PasswordHasher
 from flask_cors import CORS
-from data_model import db, Users, Requests, Places
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.engine import URL
-from sqlalchemy import create_engine
-import pyodbc
-
-geoapify_url = "https://api.geoapify.com/v2/places"
+from sqlalchemy.schema import Identity
+from data_model import db, Users, Requests, Places
+"
 
 radius_meters = 2000
 results_number = 500
@@ -25,18 +22,19 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-# Retrieve the ODBC connection string from the environment variable
-odbc_connection_string = os.getenv("DB_CONNECTION_STRING")
-# Construct the SQLAlchemy connection URI
+app = Flask(__name__)
 
-
-
-
+# Correctly formatted SQL Server connection string for SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("CONNECTIONSTRING")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
+# Create the tables
 with app.app_context():
     db.create_all()
+    print("Tables created successfully.")
+
 
 def set_category_list():
     pass
