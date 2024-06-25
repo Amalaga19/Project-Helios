@@ -5,7 +5,6 @@ from sqlalchemy.schema import Identity
 db = SQLAlchemy()
 
 
-connection_string = os.environ["Server=tcp:corporateproject.database.windows.net,1433;Initial Catalog=CorporateProject;Persist Security Info=False;User ID=lbarbion;Password=Corporateproject!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"]
 
 class Users(db.Model):
     __tablename__ = 'USERS'
@@ -17,7 +16,7 @@ class Users(db.Model):
     def user_dict(self):
         return {"id": self.USER_ID, "username": self.USERNAME, "requests": [request.request_dict() for request in self.requests_log]}
     
-class Requests(db.model):
+class Requests(db.Model):
     __tablename__ = 'REQUESTS'
     REQUEST_ID = db.Column(db.Integer, Identity(start = 1, cycle = False), primary_key=True)
     USER_ID = db.Column(db.Integer, db.ForeignKey('USERS.USER_ID'), nullable=False)

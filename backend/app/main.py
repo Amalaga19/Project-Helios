@@ -1,32 +1,42 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request, session
 from dotenv import load_dotenv
 import os
 import requests
 import argon2
 from argon2 import PasswordHasher
 from flask_cors import CORS
-
+from data_model import db, Users, Requests, Places
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.engine import URL
+from sqlalchemy import create_engine
+import pyodbc
 
 geoapify_url = "https://api.geoapify.com/v2/places"
 
 radius_meters = 2000
-
 results_number = 500
-
-geoapify_api_key = os.getenv('API_KEY_GEOAPIFY0')
-
 main_categories = ['commercial', 'catering', 'production', 'service', 'office']
+
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
-CORS = CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-UN = "" #(Placeholder for database username)
-PW = "" #(Placeholder for database password)
-DSN = "" #(Placeholder for database DSN)
+# Retrieve the ODBC connection string from the environment variable
+odbc_connection_string = os.getenv("DB_CONNECTION_STRING")
+# Construct the SQLAlchemy connection URI
+
+
+
+
+
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
 
 def set_category_list():
     pass
@@ -87,6 +97,24 @@ def get_solar_data_average(lon, lat):
         print("Response Content:", response.content.decode('utf-8'))
         return None
 
+
+
+
+
+def select_categories(commercial, catering, production, service, office):
+    category_list = []
+    if commercial == True:
+        category_list.append('COMMERCIAL')
+    if catering == True:
+        category_list.append('CATERING')
+    if production == True:
+        category_list.append('PRODUCTION')
+    if service == True:
+        category_list.append('SERVICE')
+    if office == True:
+        category_list.append('OFFICE')
+    
+    return category_list
 
 
 
