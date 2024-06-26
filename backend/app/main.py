@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import requests
 import argon2
+import folium
 from argon2 import PasswordHasher
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -11,8 +12,6 @@ from data_model import db, Users, Requests, Places
 
 radius_meters = 2000
 results_number = 500
-main_categories = ['commercial', 'catering', 'production', 'service', 'office']
-
 
 # Load environment variables from .env file
 load_dotenv()
@@ -31,11 +30,6 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     print("Tables created successfully.")
-    
-
-def set_category_list():
-    pass
-
 
 #Below the authentication hashing I used for my capstone, we can modify them later as per our database schema -Andres
 def hash_password(password): #Hashes the password so that it is stored securely in the database
@@ -96,21 +90,51 @@ def get_solar_data_average(lon, lat):
 
 
 
+#Functions to list the subcategories a place has based only on the categories chosen. Commented out because it may not be necessary.
+# def list_categories_commercial(place_id):
+#     #Query the database to see which columns that begin with 'COMMERCIAL' are True for the place_id
+#     place = Places.query.filter_by(ID = place_id).first()
+#     commercial_categories = []
+#     for column in place:
+#         if column.startswith('COMMERCIAL') and place[column] == True:
+#             commercial_categories.append(column)
+#     return commercial_categories
 
-def select_categories(commercial, catering, production, service, office):
-    category_list = []
-    if commercial == True:
-        category_list.append('COMMERCIAL')
-    if catering == True:
-        category_list.append('CATERING')
-    if production == True:
-        category_list.append('PRODUCTION')
-    if service == True:
-        category_list.append('SERVICE')
-    if office == True:
-        category_list.append('OFFICE')
-    
-    return category_list
+# def list_categories_catering(place_id):
+#     #Query the database to see which columns that begin with 'CATERING' are True for the place_id
+#     place = Places.query.filter_by(ID = place_id).first()
+#     catering_categories = []
+#     for column in place:
+#         if column.startswith('CATERING') and place[column] == True:
+#             catering_categories.append(column)
+#     return catering_categories
+
+# def list_categories_production(place_id):
+#     #Query the database to see which columns that begin with 'PRODUCTION' are True for the place_id
+#     place = Places.query.filter_by(ID = place_id).first()
+#     production_categories = []
+#     for column in place:
+#         if column.startswith('PRODUCTION') and place[column] == True:
+#             production_categories.append(column)
+#     return production_categories
+
+# def list_categories_service(place_id):
+#     #Query the database to see which columns that begin with 'SERVICE' are True for the place_id
+#     place = Places.query.filter_by(ID = place_id).first()
+#     service_categories = []
+#     for column in place:
+#         if column.startswith('SERVICE') and place[column] == True:
+#             service_categories.append(column)
+#     return service_categories
+
+# def list_categories_office(place_id):
+#     #Query the database to see which columns that begin with 'OFFICE' are True for the place_id
+#     place = Places.query.filter_by(ID = place_id).first()
+#     office_categories = []
+#     for column in place:
+#         if column.startswith('OFFICE') and place[column] == True:
+#             office_categories.append(column)
+#     return office_categories
 
 
 
@@ -125,7 +149,27 @@ def home():
     return jsonify(message="Hello, Barter Energy!")
 
 @app.route('/get_places')
-def get_places():
+def get_places(lon, lat, catering, commercial, production, service, office):
+    category_list = []
+    places_list = []
+    if catering == True:
+        category_list.append('CATERING')
+    if commercial == True:
+        category_list.append('COMMERCIAL')
+    if production == True:
+        category_list.append('PRODUCTION')
+    if service == True:
+        category_list.append('SERVICE')
+    if office == True:
+        category_list.append('OFFICE')
+    #Query the database for those places where the columns in the category_list are True
+    for category in category_list:
+        places = Places.query.filter_by(category = True).all()
+        for place in places:
+            if place not in places_list:
+                places_list.append(place)
+            else:
+                continue
     pass
 
 @app.route('/get_solar')
