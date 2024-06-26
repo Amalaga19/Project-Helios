@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, session
+import flask
 from dotenv import load_dotenv
 import os
 import requests
@@ -30,6 +31,21 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     print("Tables created successfully.")
+
+
+def add_cors_headers(response):
+    origin = request.headers.get('Origin')
+    if origin:
+        response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+    return response
+
+app.after_request(add_cors_headers)
+
+
+
 
 #Below the authentication hashing I used for my capstone, we can modify them later as per our database schema -Andres
 def hash_password(password): #Hashes the password so that it is stored securely in the database
@@ -148,8 +164,8 @@ def home():
         print(place.NAME, place.LATITUDE, place.LONGITUDE)
     return jsonify(message="Hello, Barter Energy!")
 
-@app.route('/get_places')
-def get_places(lon, lat, catering, commercial, production, service, office):
+@app.route('/get_places', methods=['GET'])
+def get_places(lon, lat, city, catering, commercial, production, service, office):
     category_list = []
     places_list = []
     if catering == True:
@@ -164,7 +180,7 @@ def get_places(lon, lat, catering, commercial, production, service, office):
         category_list.append('OFFICE')
     #Query the database for those places where the columns in the category_list are True
     for category in category_list:
-        places = Places.query.filter_by(category = True).all()
+        places = Places.query.filter_by(category = True).filter_by("CITY" = city).all()
         for place in places:
             if place not in places_list:
                 places_list.append(place)
@@ -172,7 +188,7 @@ def get_places(lon, lat, catering, commercial, production, service, office):
                 continue
     pass
 
-@app.route('/get_solar')
+@app.route('/get_solar', methods=['GET'])
 def get_solar(lon, lat):
     lon = round(lon, 3)
     lat = round(lat, 3)
@@ -180,6 +196,27 @@ def get_solar(lon, lat):
     return jsonify(radiation = f"{radiation_average:.2f}")
 
 #Login-Logout routes I used for Capstone - Andres
+
+@app.route('/register', methods=['POST', 'OPTIONS'])
+def register(): #This route is used to register a new user
+    if request.method == 'OPTIONS':
+        response = flask.make_response()
+        return add_cors_headers(response)
+    data = request.json
+    email = data.get("email")
+    user = data.get("username")
+    password = data.get("password")
+    username = Users.query.filter_by(USERNAME=user).first()
+    email_check = Users.query.filter_by(EMAIL=email).first()
+    if username:
+        return jsonify({"success": "false", "message": "User already exists."}), 404
+    elif email_check:
+        return jsonify({"success": "false", "message": "Email already in use."}), 404
+    else:
+        new_user = Users(USERNAME=user, PASSWORD=hash_password(password))
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"success": "true", "message": "User created successfully."}), 201
 
 @app.route('/login', methods=['POST', 'OPTIONS'])
 def login(): #This route is used to log in the user
@@ -202,8 +239,6 @@ def login(): #This route is used to log in the user
 def logout():
     session.clear()
     return jsonify({"message": "Logged out."}), 200
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
