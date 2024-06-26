@@ -9,6 +9,7 @@ db = SQLAlchemy()
 class Users(db.Model):
     __tablename__ = 'USERS'
     USER_ID = db.Column(db.Integer, Identity(start=1, cycle=False), primary_key=True)
+    EMAIL = db.Column(db.String(100), unique=True, nullable=False)
     USERNAME = db.Column(db.String(100), unique=True, nullable=False)
     PASSWORD = db.Column(db.String(1000), nullable=False) # 1000 characters because the password will be hashed
     requests_log = db.relationship("Requests", back_populates="user")

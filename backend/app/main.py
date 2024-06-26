@@ -8,7 +8,6 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.schema import Identity
 from data_model import db, Users, Requests, Places
-"
 
 radius_meters = 2000
 results_number = 500
@@ -19,13 +18,11 @@ main_categories = ['commercial', 'catering', 'production', 'service', 'office']
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+CORS = CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-
-app = Flask(__name__)
-
 # Correctly formatted SQL Server connection string for SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("CONNECTIONSTRING")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_CONNECTION_STRING")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -34,10 +31,11 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     print("Tables created successfully.")
-
+    
 
 def set_category_list():
     pass
+
 
 #Below the authentication hashing I used for my capstone, we can modify them later as per our database schema -Andres
 def hash_password(password): #Hashes the password so that it is stored securely in the database
@@ -119,6 +117,11 @@ def select_categories(commercial, catering, production, service, office):
 # Define routes
 @app.route('/')
 def home():
+
+    #Write a query to print all the PLACES table
+    places = Places.query.all()
+    for place in places:
+        print(place.NAME, place.LATITUDE, place.LONGITUDE)
     return jsonify(message="Hello, Barter Energy!")
 
 @app.route('/get_places')
