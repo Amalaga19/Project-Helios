@@ -10,6 +10,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.schema import Identity
 from data_model import db, Users, Requests, Places
+from sqlalchemy import text  
 
 radius_meters = 2000
 results_number = 500
@@ -155,19 +156,40 @@ def get_solar_data_average(lon, lat):
 
 
 # Define routes
+# Define routes
 @app.route('/')
 def home():
-
-    #Write a query to print all the PLACES table
-    places = Places.query.all()
-    for place in places:
-        print(place.NAME, place.LATITUDE, place.LONGITUDE)
-    return jsonify(message="Hello, Barter Energy!")
+    #To be removed later
+    places = db.session.query(Places.PLACE_ID, Places.NAME, Places.LATITUDE, Places.LONGITUDE).all()
+    places_list = [{'NAME': place.NAME, 'LATITUDE': place.LATITUDE, 'LONGITUDE': place.LONGITUDE} for place in places]
+    return jsonify(places=places_list)
 
 @app.route('/get_places', methods=['GET'])
-def get_places(lon, lat, city, catering, commercial, production, service, office):
-    category_list = []
+def get_places():
+    lat = request.args.get('lat')
+    lon = request.args.get('lon')
+    radius = request.args.get('radius', '2000')
+    
+    if lat is None or lon is None:
+        return jsonify({"error": "Latitude and longitude are required parameters"}), 400
+
+    try:
+        lat = float(lat)
+        lon = float(lon)
+        radius_meters = int(radius)
+    except ValueError:
+        return jsonify({"error": "Latitude and longitude must be valid numbers"}), 400
+
+    query = text("""
+        SELECT PLACE_ID, NAME, LATITUDE, LONGITUDE
+        FROM Places
+        WHERE LOCATION.STDistance(geography::Point(:lat, :lon, 4326)) <= :radius_meters
+    """)
+
+    result = db.session.execute(query, {'lat': lat, 'lon': lon, 'radius_meters': radius_meters})
+
     places_list = []
+    ''' This will be made into a new function later
     if catering == True:
         category_list.append('CATERING')
     if commercial == True:
@@ -187,6 +209,19 @@ def get_places(lon, lat, city, catering, commercial, production, service, office
             else:
                 continue
     pass
+'''
+
+
+    for row in result:
+        places_list.append({
+            'PLACE_ID': row.PLACE_ID,
+            'NAME': row.NAME,
+            'LATITUDE': row.LATITUDE,
+            'LONGITUDE': row.LONGITUDE,
+        })
+
+    return jsonify(places=places_list)
+
 
 @app.route('/get_solar', methods=['GET'])
 def get_solar(lon, lat):
@@ -203,15 +238,11 @@ def register(): #This route is used to register a new user
         response = flask.make_response()
         return add_cors_headers(response)
     data = request.json
-    email = data.get("email")
     user = data.get("username")
     password = data.get("password")
     username = Users.query.filter_by(USERNAME=user).first()
-    email_check = Users.query.filter_by(EMAIL=email).first()
     if username:
         return jsonify({"success": "false", "message": "User already exists."}), 404
-    elif email_check:
-        return jsonify({"success": "false", "message": "Email already in use."}), 404
     else:
         new_user = Users(USERNAME=user, PASSWORD=hash_password(password))
         db.session.add(new_user)

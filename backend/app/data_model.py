@@ -9,7 +9,6 @@ db = SQLAlchemy()
 class Users(db.Model):
     __tablename__ = 'USERS'
     USER_ID = db.Column(db.Integer, Identity(start=1, cycle=False), primary_key=True)
-    EMAIL = db.Column(db.String(100), unique=True, nullable=False)
     USERNAME = db.Column(db.String(100), unique=True, nullable=False)
     PASSWORD = db.Column(db.String(1000), nullable=False) # 1000 characters because the password will be hashed
     requests_log = db.relationship("Requests", back_populates="user")
@@ -37,7 +36,7 @@ class Requests(db.Model):
 
 class Places(db.Model):
     __tablename__ = 'PLACES'
-    PLACE_ID = db.Column(db.Integer, Identity(start = 1, cycle = False), primary_key=True)
+    PLACE_ID = db.Column(db.BigInteger, primary_key=True, nullable=False)
     NAME = db.Column(db.String(100), nullable=False)
     LONGITUDE = db.Column(db.Float, nullable=False)
     LATITUDE = db.Column(db.Float, nullable=False)
@@ -154,6 +153,7 @@ class Places(db.Model):
     PRODUCTION_BREWERY = db.Column(db.Boolean, nullable=False)
     PRODUCTION_POTTERY = db.Column(db.Boolean, nullable=False)
     PRODUCTION_WINERY = db.Column(db.Boolean, nullable=False)
+    LOCATION = db.Column(db.Text, nullable=False)
 
     def place_dict(self):
         return {"id": self.PLACE_ID, "name": self.NAME, "longitude": self.LONGITUDE, "latitude": self.LATITUDE, "country": self.COUNTRY, "state": self.STATE, "city": self.CITY, "district": self.DISTRICT, "neighbourhood": self.NEIGHBOURHOOD, "suburb": self.SUBURB, "street": self.STREET, "postcode": self.POSTCODE, "categories": [category for category in self.__dict__.keys() if self.__dict__[category] == True]}
