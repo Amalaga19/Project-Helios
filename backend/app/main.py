@@ -157,11 +157,6 @@ def get_solar_data_average(lon, lat):
 # Define routes
 @app.route('/')
 def home():
-
-    #Write a query to print all the PLACES table
-    places = Places.query.all()
-    for place in places:
-        print(place.NAME, place.LATITUDE, place.LONGITUDE)
     return jsonify(message="Hello, Barter Energy!")
 
 @app.route('/get_places', methods=['GET'])
@@ -180,7 +175,7 @@ def get_places(lon, lat, city, catering, commercial, production, service, office
         category_list.append('OFFICE')
     #Query the database for those places where the columns in the category_list are True
     for category in category_list:
-        places = Places.query.filter_by(category = True).filter_by("CITY" = city).all()
+        places = Places.query.filter_by(category = True).filter_by(CITY= city).all()
         for place in places:
             if place not in places_list:
                 places_list.append(place)
@@ -203,15 +198,11 @@ def register(): #This route is used to register a new user
         response = flask.make_response()
         return add_cors_headers(response)
     data = request.json
-    email = data.get("email")
     user = data.get("username")
     password = data.get("password")
     username = Users.query.filter_by(USERNAME=user).first()
-    email_check = Users.query.filter_by(EMAIL=email).first()
     if username:
         return jsonify({"success": "false", "message": "User already exists."}), 404
-    elif email_check:
-        return jsonify({"success": "false", "message": "Email already in use."}), 404
     else:
         new_user = Users(USERNAME=user, PASSWORD=hash_password(password))
         db.session.add(new_user)
