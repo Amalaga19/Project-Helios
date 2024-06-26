@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { TileLayer, Marker, Circle } from 'react-leaflet';
@@ -45,12 +47,6 @@ const MapComponent: React.FC = () => {
           value={radius / 1000}
           onChange={(e) => setRadius(Number(e.target.value) * 1000)}
         />
-        <div className="mt-4">
-          <h4>Filters (coming soon):</h4>
-          <p>Filter 1</p>
-          <p>Filter 2</p>
-          <p>Filter 3</p>
-        </div>
       </div>
       <DynamicMap center={center} zoom={13} style={{ height: '100%', width: '100%' }}>
         <TileLayer

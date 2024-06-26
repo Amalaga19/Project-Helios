@@ -1,6 +1,5 @@
 import React from "react";
 import { useLockedBody } from "../hooks/useBodyLock";
-import { NavbarWrapper } from "../navbar/navbar";
 import { SidebarWrapper } from "../sidebar/sidebar";
 import { SidebarContext } from "./layout-context";
 
@@ -23,9 +22,11 @@ export const Layout = ({ children }: Props) => {
         setCollapsed: handleToggleSidebar,
       }}
     >
-      <section className="flex">
+      <section className="flex h-screen">
         <SidebarWrapper />
-        <NavbarWrapper>{children}</NavbarWrapper>
+        <main className="flex-1 overflow-y-auto p-4">
+          {children}
+        </main>
       </section>
     </SidebarContext.Provider>
   );

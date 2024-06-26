@@ -1,5 +1,5 @@
+// table.tsx
 import {
-  Link,
   Table,
   TableBody,
   TableCell,
@@ -13,14 +13,13 @@ import { RenderCell } from "./render-cell";
 
 export const TableWrapper = () => {
   return (
-    <div className=" w-full flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-4">
       <Table aria-label="Example table with custom cells">
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn
               key={column.uid}
-              hideHeader={column.uid === "actions"}
-              align={column.uid === "actions" ? "center" : "start"}
+              align="start"
             >
               {column.name}
             </TableColumn>
@@ -28,10 +27,10 @@ export const TableWrapper = () => {
         </TableHeader>
         <TableBody items={users}>
           {(item) => (
-            <TableRow>
+            <TableRow key={item.id}>
               {(columnKey) => (
                 <TableCell>
-                  {RenderCell({ user: item, columnKey: columnKey })}
+                  <RenderCell user={item} columnKey={columnKey} />
                 </TableCell>
               )}
             </TableRow>
