@@ -10,6 +10,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.schema import Identity
 from data_model import db, Users, Requests, Places
+from sqlalchemy import text  
 
 radius_meters = 2000
 results_number = 500
@@ -155,39 +156,47 @@ def get_solar_data_average(lon, lat):
 
 
 # Define routes
+# Define routes
 @app.route('/')
 def home():
-
-    #Write a query to print all the PLACES table
-    places = Places.query.all()
-    for place in places:
-        print(place.NAME, place.LATITUDE, place.LONGITUDE)
-    return jsonify(message="Hello, Barter Energy!")
+    places = db.session.query(Places.PLACE_ID, Places.NAME, Places.LATITUDE, Places.LONGITUDE).all()
+    places_list = [{'NAME': place.NAME, 'LATITUDE': place.LATITUDE, 'LONGITUDE': place.LONGITUDE} for place in places]
+    return jsonify(places=places_list)
 
 @app.route('/get_places', methods=['GET'])
-def get_places(lon, lat, city, catering, commercial, production, service, office):
-    category_list = []
-    places_list = []
-    if catering == True:
-        category_list.append('CATERING')
-    if commercial == True:
-        category_list.append('COMMERCIAL')
-    if production == True:
-        category_list.append('PRODUCTION')
-    if service == True:
-        category_list.append('SERVICE')
-    if office == True:
-        category_list.append('OFFICE')
-    #Query the database for those places where the columns in the category_list are True
-    for category in category_list:
-        places = Places.query.filter_by(category = True).filter_by("CITY" = city).all()
-        for place in places:
-            if place not in places_list:
-                places_list.append(place)
-            else:
-                continue
-    pass
+def get_places():
+    lat = request.args.get('lat')
+    lon = request.args.get('lon')
+    radius = request.args.get('radius', '2000')
+    
+    if lat is None or lon is None:
+        return jsonify({"error": "Latitude and longitude are required parameters"}), 400
 
+    try:
+        lat = float(lat)
+        lon = float(lon)
+        radius_meters = int(radius)
+    except ValueError:
+        return jsonify({"error": "Latitude and longitude must be valid numbers"}), 400
+
+    query = text("""
+        SELECT PLACE_ID, NAME, LATITUDE, LONGITUDE
+        FROM Places
+        WHERE LOCATION.STDistance(geography::Point(:lat, :lon, 4326)) <= :radius_meters
+    """)
+
+    result = db.session.execute(query, {'lat': lat, 'lon': lon, 'radius_meters': radius_meters})
+
+    places_list = []
+    for row in result:
+        places_list.append({
+            'PLACE_ID': row.PLACE_ID,
+            'NAME': row.NAME,
+            'LATITUDE': row.LATITUDE,
+            'LONGITUDE': row.LONGITUDE,
+        })
+
+    return jsonify(places=places_list)
 @app.route('/get_solar', methods=['GET'])
 def get_solar(lon, lat):
     lon = round(lon, 3)
