@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { TileLayer, Marker, Circle } from 'react-leaflet';
+import { TileLayer, Marker, Circle, Popup } from 'react-leaflet';
 import L, { LatLngExpression } from 'leaflet';
 import Papa from 'papaparse';
 import 'leaflet/dist/leaflet.css';
+import { categoryColors, getColorForCategory } from './utils';
 
 // Dynamically import react-leaflet to prevent SSR issues
 const DynamicMap = dynamic(
@@ -15,8 +16,8 @@ const DynamicMap = dynamic(
 
 const center: LatLngExpression = [40.4168, -3.7038]; // Madrid coordinates
 
-const fetchCsvData = async (filePath: string) => {
-  const response = await fetch(filePath);
+const fetchCsvData = async () => {
+  const response = await fetch('../public/clean_data.csv'); // Ensure this path is correct
   const reader = response.body?.getReader();
   const result = await reader?.read();
   const decoder = new TextDecoder('utf-8');
@@ -30,7 +31,7 @@ const MapComponent: React.FC = () => {
 
   useEffect(() => {
     // Fetch CSV data
-    fetchCsvData('../backend/app/services.csv').then(setBusinesses);
+    fetchCsvData().then(setBusinesses);
   }, []);
 
   return (
@@ -41,7 +42,7 @@ const MapComponent: React.FC = () => {
           type="range"
           id="radius"
           name="radius"
-          min="0"
+          min="1"
           max="5"
           step="0.1"
           value={radius / 1000}
@@ -53,24 +54,32 @@ const MapComponent: React.FC = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
-        {businesses.map((business, idx) => (
-          <Marker
-            key={idx}
-            position={[parseFloat(business.latitude), parseFloat(business.longitude)] as LatLngExpression}
-            icon={L.icon({
-              iconUrl: '/marker.png',
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-            })}
-          >
-            <Circle
-              center={[parseFloat(business.latitude), parseFloat(business.longitude)] as LatLngExpression}
-              radius={radius}
-              color="blue"
-            />
-          </Marker>
-        ))}
+        {businesses.map((business, idx) => {
+          const position: LatLngExpression = [parseFloat(business.latitude), parseFloat(business.longitude)];
+          const categories = business.categories.split(',').map(category => category.trim());
+          const color = getColorForCategory(categories);
+
+          return (
+            <Marker key={idx} position={position}>
+              <Popup>
+                <div>
+                  <h3>{business.name}</h3>
+                  <p>Category: {business.categories}</p>
+                  <p>Barrio: {business.barrio}</p>
+                  <p>Address: {business.address}</p>
+                  <p>Longitude: {business.longitude}</p>
+                  <p>Latitude: {business.latitude}</p>
+                </div>
+              </Popup>
+              <Circle
+                center={position}
+                radius={radius}
+                color={color}
+                fillColor={color}
+              />
+            </Marker>
+          );
+        })}
       </DynamicMap>
     </div>
   );

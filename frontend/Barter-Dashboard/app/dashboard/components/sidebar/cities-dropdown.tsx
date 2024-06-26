@@ -1,28 +1,23 @@
 "use client";
-import MadridImage from '../../public/cities/Madrid.jpg';
-import BarcelonaImage from '../../public/cities/Barcelona.png';
-import SevillaImage from '../../public/cities/Sevilla.png';
-import MalagaImage from '../../public/cities/Malaga.png';
+
+import React, { useState } from 'react';
+import Image from 'next/image';
 import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
 } from "@nextui-org/react";
-import React, { useState } from "react";
-import Image from "next/image";
-
-import { StaticImageData } from "next/image";
 
 interface City {
   name: string;
-  imageSrc: StaticImageData;
+  imageSrc: string;
 }
 
 export const CitiesDropdown = () => {
   const [city, setCity] = useState<City>({
     name: "Madrid",
-    imageSrc: MadridImage,
+    imageSrc: "/cities/Madrid.jpg",
   });
 
   return (
@@ -52,36 +47,36 @@ export const CitiesDropdown = () => {
           if (e === "1") {
             setCity({
               name: "Madrid",
-              imageSrc: MadridImage,
+              imageSrc: "/cities/Madrid.jpg",
             });
           }
           if (e === "2") {
             setCity({
               name: "Barcelona",
-              imageSrc: BarcelonaImage,
+              imageSrc: "/cities/Barcelona.png",
             });
           }
           if (e === "3") {
             setCity({
               name: "Sevilla",
-              imageSrc: SevillaImage,
+              imageSrc: "/cities/Sevilla.png",
             });
           }
           if (e === "4") {
             setCity({
               name: "Malaga",
-              imageSrc: MalagaImage,
+              imageSrc: "/cities/Malaga.png",
             });
           }
         }}
         aria-label="City Selection"
-        variant="bordered" // Ensuring the dropdown is bordered
+        variant="bordered"
       >
         <DropdownItem
           key="1"
           startContent={
             <Image
-              src={MadridImage}
+              src="/cities/Madrid.jpg"
               alt="Madrid"
               width={42}
               height={42}
@@ -99,7 +94,7 @@ export const CitiesDropdown = () => {
           key="2"
           startContent={
             <Image
-              src={BarcelonaImage}
+              src="/cities/Barcelona.png"
               alt="Barcelona"
               width={42}
               height={42}
@@ -117,7 +112,7 @@ export const CitiesDropdown = () => {
           key="3"
           startContent={
             <Image
-              src={SevillaImage}
+              src="/cities/Sevilla.png"
               alt="Sevilla"
               width={42}
               height={42}
@@ -135,7 +130,7 @@ export const CitiesDropdown = () => {
           key="4"
           startContent={
             <Image
-              src={MalagaImage}
+              src="/cities/Malaga.png"
               alt="Malaga"
               width={42}
               height={42}
