@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_CONNECTION_STRING")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
-category_list = ["CATERING", "PRODUCTION"]\
+category_list = ["CATERING", "PRODUCTION"]
 
 lon = -3.710088896522012
 lat = 40.4452864503258
