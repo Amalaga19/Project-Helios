@@ -40,7 +40,7 @@ class Places(db.Model):
     NAME = db.Column(db.String(100), nullable=False)
     LONGITUDE = db.Column(db.Float, nullable=False)
     LATITUDE = db.Column(db.Float, nullable=False)
-    LOCATION = db.Column(db.String, nullable=False)
+    LOCATION = db.Column(db.Text, nullable=False)
     COUNTRY = db.Column(db.String(100), nullable=False)
     STATE = db.Column(db.String(100), nullable=False)
     CITY = db.Column(db.String(100), nullable=False)
