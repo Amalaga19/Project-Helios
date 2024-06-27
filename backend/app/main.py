@@ -91,11 +91,12 @@ def get_solar_data_average(lon, lat):
                     except ValueError as e:
                         # Skip entries with invalid data and print an error message
                         print(f"Skipping entry due to error: {e}, entry content: {entry}")
-            average = radiation_total / count
             
             if count==0:
                 return 0
             
+            average = radiation_total / count
+
             return average
         else:
             print("Error: 'outputs' or 'monthly' key not found in the response.")
@@ -192,11 +193,21 @@ def get_places():
 
 
 @app.route('/get_solar', methods=['GET'])
-def get_solar(lon, lat):
+def get_solar():
+    lon = request.args.get('lon', type=float)
+    lat = request.args.get('lat', type=float)
+    
+    if lon is None or lat is None:
+        return jsonify({"error": "Longitude and latitude are required parameters"}), 400
+
     lon = round(lon, 3)
     lat = round(lat, 3)
     radiation_average = get_solar_data_average(lon, lat)
-    return jsonify(radiation = f"{radiation_average:.2f}")
+    
+    if radiation_average is None:
+        return jsonify({"error": "Failed to retrieve solar data"}), 500
+    
+    return jsonify(radiation=f"{radiation_average:.2f}")
 
 #Login-Logout routes I used for Capstone - Andres
 
