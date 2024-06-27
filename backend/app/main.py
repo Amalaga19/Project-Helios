@@ -165,7 +165,7 @@ def get_places():
     if not category_conditions:
         return jsonify({"error": "At least one category must be selected"}), 400
 
-    where_clause = " AND ".join(category_conditions)
+    where_clause = " OR ".join(category_conditions)
     query_str = f"""
         SELECT PLACE_ID, NAME, LATITUDE, LONGITUDE
         FROM Places
