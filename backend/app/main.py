@@ -108,15 +108,15 @@ def get_solar_data_average(lon, lat):
 
 def get_category(catering, commercial, production, service, office):
     category_list = []
-    if catering:
+    if catering == "true":
         category_list.append('CATERING')
-    if commercial:
+    if commercial == "true":
         category_list.append('COMMERCIAL')
-    if production:
+    if production == "true":
         category_list.append('PRODUCTION')
-    if service:
+    if service == "true":
         category_list.append('SERVICE')
-    if office:
+    if office == "true":
         category_list.append('OFFICE')
     return category_list
 
