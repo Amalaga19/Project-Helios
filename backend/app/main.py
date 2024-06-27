@@ -4,13 +4,14 @@ from dotenv import load_dotenv
 import os
 import requests
 import argon2
-import folium
 from argon2 import PasswordHasher
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.schema import Identity
 from data_model import db, Users, Requests, Places
-from sqlalchemy import text  
+from sqlalchemy import func
+from geoalchemy2 import WKTElement
+from shapely import wkt
 
 radius_meters = 2000
 results_number = 500
@@ -104,58 +105,20 @@ def get_solar_data_average(lon, lat):
         print("Response Content:", response.content.decode('utf-8'))
         return None
 
+def get_category(catering, commercial, production, service, office):
+    category_list = []
+    if catering == True:
+        category_list.append('CATERING')
+    if commercial == True:
+        category_list.append('COMMERCIAL')
+    if production == True:
+        category_list.append('PRODUCTION')
+    if service == True:
+        category_list.append('SERVICE')
+    if office == True:
+        category_list.append('OFFICE')
+    return category_list
 
-
-
-#Functions to list the subcategories a place has based only on the categories chosen. Commented out because it may not be necessary.
-# def list_categories_commercial(place_id):
-#     #Query the database to see which columns that begin with 'COMMERCIAL' are True for the place_id
-#     place = Places.query.filter_by(ID = place_id).first()
-#     commercial_categories = []
-#     for column in place:
-#         if column.startswith('COMMERCIAL') and place[column] == True:
-#             commercial_categories.append(column)
-#     return commercial_categories
-
-# def list_categories_catering(place_id):
-#     #Query the database to see which columns that begin with 'CATERING' are True for the place_id
-#     place = Places.query.filter_by(ID = place_id).first()
-#     catering_categories = []
-#     for column in place:
-#         if column.startswith('CATERING') and place[column] == True:
-#             catering_categories.append(column)
-#     return catering_categories
-
-# def list_categories_production(place_id):
-#     #Query the database to see which columns that begin with 'PRODUCTION' are True for the place_id
-#     place = Places.query.filter_by(ID = place_id).first()
-#     production_categories = []
-#     for column in place:
-#         if column.startswith('PRODUCTION') and place[column] == True:
-#             production_categories.append(column)
-#     return production_categories
-
-# def list_categories_service(place_id):
-#     #Query the database to see which columns that begin with 'SERVICE' are True for the place_id
-#     place = Places.query.filter_by(ID = place_id).first()
-#     service_categories = []
-#     for column in place:
-#         if column.startswith('SERVICE') and place[column] == True:
-#             service_categories.append(column)
-#     return service_categories
-
-# def list_categories_office(place_id):
-#     #Query the database to see which columns that begin with 'OFFICE' are True for the place_id
-#     place = Places.query.filter_by(ID = place_id).first()
-#     office_categories = []
-#     for column in place:
-#         if column.startswith('OFFICE') and place[column] == True:
-#             office_categories.append(column)
-#     return office_categories
-
-
-
-# Define routes
 # Define routes
 @app.route('/')
 def home():
@@ -169,56 +132,36 @@ def get_places():
     lat = request.args.get('lat')
     lon = request.args.get('lon')
     radius = request.args.get('radius', '2000')
-    
+    catering = request.args.get('catering', False)
+    commercial = request.args.get('commercial', False)
+    production = request.args.get('production', False)
+    service = request.args.get('service', False)
+    office = request.args.get('office', False)
+    category_list = get_category(catering, commercial, production, service, office)
     if lat is None or lon is None:
         return jsonify({"error": "Latitude and longitude are required parameters"}), 400
-
     try:
         lat = float(lat)
         lon = float(lon)
         radius_meters = int(radius)
     except ValueError:
         return jsonify({"error": "Latitude and longitude must be valid numbers"}), 400
+    #For every category in the category_list, add a WHERE clause to the query to filter if the category is True, if multiple categories are chosen, the query will return places that have at least one of the categories chosen.
 
-    query = text("""
-        SELECT PLACE_ID, NAME, LATITUDE, LONGITUDE
-        FROM Places
-        WHERE LOCATION.STDistance(geography::Point(:lat, :lon, 4326)) <= :radius_meters
-    """)
 
-    result = db.session.execute(query, {'lat': lat, 'lon': lon, 'radius_meters': radius_meters})
+    #result = db.session.execute(query, {'lat': lat, 'lon': lon, 'radius_meters': radius_meters})
 
     places_list = []
-    ''' This will be made into a new function later
-    if catering == True:
-        category_list.append('CATERING')
-    if commercial == True:
-        category_list.append('COMMERCIAL')
-    if production == True:
-        category_list.append('PRODUCTION')
-    if service == True:
-        category_list.append('SERVICE')
-    if office == True:
-        category_list.append('OFFICE')
-    #Query the database for those places where the columns in the category_list are True
+    
+    point = WKTElement(f'POINT({lon} {lat})', srid=4326)
     for category in category_list:
-        places = Places.query.filter_by(category = True).filter_by("CITY" = city).all()
+        places = Places.query.filter_by(category = True).filter(func.ST_Distance(wkt.loads(Places.LOCATION), point) <= radius_meters).all()
         for place in places:
             if place not in places_list:
-                places_list.append(place)
+                places_list.append(Places.place_dict(place))
             else:
                 continue
     pass
-'''
-
-
-    for row in result:
-        places_list.append({
-            'PLACE_ID': row.PLACE_ID,
-            'NAME': row.NAME,
-            'LATITUDE': row.LATITUDE,
-            'LONGITUDE': row.LONGITUDE,
-        })
 
     return jsonify(places=places_list)
 

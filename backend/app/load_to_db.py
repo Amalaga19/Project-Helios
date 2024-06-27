@@ -5,7 +5,7 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.schema import Identity
 import pandas as pd
-from data_model import db, Places
+from data_model import db
 
 load_dotenv()
 app = Flask(__name__)
