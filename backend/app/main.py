@@ -9,7 +9,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.schema import Identity
 from data_model import db, Users, Requests, Places
-from sqlalchemy import func
+from sqlalchemy import func, text, cast
 from geoalchemy2 import WKTElement
 from shapely import wkt
 
@@ -107,15 +107,15 @@ def get_solar_data_average(lon, lat):
 
 def get_category(catering, commercial, production, service, office):
     category_list = []
-    if catering == True:
+    if catering:
         category_list.append('CATERING')
-    if commercial == True:
+    if commercial:
         category_list.append('COMMERCIAL')
-    if production == True:
+    if production:
         category_list.append('PRODUCTION')
-    if service == True:
+    if service:
         category_list.append('SERVICE')
-    if office == True:
+    if office:
         category_list.append('OFFICE')
     return category_list
 
@@ -132,12 +132,12 @@ def get_places():
     lat = request.args.get('lat')
     lon = request.args.get('lon')
     radius = request.args.get('radius', '2000')
-    catering = request.args.get('catering', False)
-    commercial = request.args.get('commercial', False)
-    production = request.args.get('production', False)
-    service = request.args.get('service', False)
-    office = request.args.get('office', False)
-    category_list = get_category(catering, commercial, production, service, office)
+    catering = request.args.get('catering', 'false').lower() == 'true'
+    commercial = request.args.get('commercial', 'false').lower() == 'true'
+    production = request.args.get('production', 'false').lower() == 'true'
+    service = request.args.get('service', 'false').lower() == 'true'
+    office = request.args.get('office', 'false').lower() == 'true'
+
     if lat is None or lon is None:
         return jsonify({"error": "Latitude and longitude are required parameters"}), 400
     try:
@@ -146,22 +146,47 @@ def get_places():
         radius_meters = int(radius)
     except ValueError:
         return jsonify({"error": "Latitude and longitude must be valid numbers"}), 400
-    #For every category in the category_list, add a WHERE clause to the query to filter if the category is True, if multiple categories are chosen, the query will return places that have at least one of the categories chosen.
 
+    # For debugging
+    print(f"Latitude: {lat}, Longitude: {lon}, Radius: {radius_meters}")
+    print(f"Category selections - Catering: {catering}, Commercial: {commercial}, Production: {production}, Service: {service}, Office: {office}")
 
-    #result = db.session.execute(query, {'lat': lat, 'lon': lon, 'radius_meters': radius_meters})
+    categories = {
+        'CATERING': catering,
+        'COMMERCIAL': commercial,
+        'PRODUCTION': production,
+        'SERVICE': service,
+        'OFFICE': office
+    }
+
+    category_conditions = [f"{category} = 1" for category, is_selected in categories.items() if is_selected]
+
+    if not category_conditions:
+        return jsonify({"error": "At least one category must be selected"}), 400
+
+    where_clause = " AND ".join(category_conditions)
+    query_str = f"""
+        SELECT PLACE_ID, NAME, LATITUDE, LONGITUDE
+        FROM Places
+        WHERE ({where_clause}) AND LOCATION.STDistance(geography::STGeomFromText(:point, 4326)) <= :radius_meters
+    """
+    print(f"Generated query: {query_str}")
+
+    query = text(query_str)
+    result = db.session.execute(query, {'point': f'POINT({lon} {lat})', 'radius_meters': radius_meters})
 
     places_list = []
+    for row in result:
+        place_dict = {
+            'PLACE_ID': row.PLACE_ID,
+            'NAME': row.NAME,
+            'LATITUDE': row.LATITUDE,
+            'LONGITUDE': row.LONGITUDE,
+        }
+        if place_dict not in places_list:
+            places_list.append(place_dict)
     
-    point = WKTElement(f'POINT({lon} {lat})', srid=4326)
-    for category in category_list:
-        places = Places.query.filter_by(category = True).filter(func.ST_Distance(wkt.loads(Places.LOCATION), point) <= radius_meters).all()
-        for place in places:
-            if place not in places_list:
-                places_list.append(Places.place_dict(place))
-            else:
-                continue
-    pass
+    print(f"Found places: {places_list}")
 
     return jsonify(places=places_list)
 
