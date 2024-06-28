@@ -9,13 +9,11 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.schema import Identity
 from data_model import db, Users, Requests, Places
-from sqlalchemy import func, text, cast
-from geoalchemy2 import WKTElement
-from shapely import wkt
+from sqlalchemy import text
+import datetime
 
 radius_meters = 2000
 results_number = 500
-
 # Load environment variables from .env file
 load_dotenv()
 
@@ -106,52 +104,7 @@ def get_solar_data_average(lon, lat):
         print("Response Content:", response.content.decode('utf-8'))
         return None
 
-def get_category(catering, commercial, production, service, office):
-    category_list = []
-    if catering == "true":
-        category_list.append('CATERING')
-    if commercial == "true":
-        category_list.append('COMMERCIAL')
-    if production == "true":
-        category_list.append('PRODUCTION')
-    if service == "true":
-        category_list.append('SERVICE')
-    if office == "true":
-        category_list.append('OFFICE')
-    return category_list
-
-# Define routes
-@app.route('/')
-def home():
-    #To be removed later
-    places = db.session.query(Places.PLACE_ID, Places.NAME, Places.LATITUDE, Places.LONGITUDE).all()
-    places_list = [{'NAME': place.NAME, 'LATITUDE': place.LATITUDE, 'LONGITUDE': place.LONGITUDE} for place in places]
-    return jsonify(places=places_list)
-
-@app.route('/get_places', methods=['GET'])
-def get_places():
-    lat = request.args.get('lat')
-    lon = request.args.get('lon')
-    radius = request.args.get('radius', '2000')
-    catering = request.args.get('catering', 'false').lower() == 'true'
-    commercial = request.args.get('commercial', 'false').lower() == 'true'
-    production = request.args.get('production', 'false').lower() == 'true'
-    service = request.args.get('service', 'false').lower() == 'true'
-    office = request.args.get('office', 'false').lower() == 'true'
-
-    if lat is None or lon is None:
-        return jsonify({"error": "Latitude and longitude are required parameters"}), 400
-    try:
-        lat = float(lat)
-        lon = float(lon)
-        radius_meters = int(radius)
-    except ValueError:
-        return jsonify({"error": "Latitude and longitude must be valid numbers"}), 400
-
-    # For debugging
-    print(f"Latitude: {lat}, Longitude: {lon}, Radius: {radius_meters}")
-    print(f"Category selections - Catering: {catering}, Commercial: {commercial}, Production: {production}, Service: {service}, Office: {office}")
-
+def build_query(catering, commercial, production, service, office):
     categories = {
         'CATERING': catering,
         'COMMERCIAL': commercial,
@@ -167,28 +120,63 @@ def get_places():
 
     where_clause = " OR ".join(category_conditions)
     query_str = f"""
-        SELECT PLACE_ID, NAME, LATITUDE, LONGITUDE
-        FROM Places
+        SELECT * FROM Places
         WHERE ({where_clause}) AND LOCATION.STDistance(geography::STGeomFromText(:point, 4326)) <= :radius_meters
     """
-    print(f"Generated query: {query_str}")
+    return text(query_str)
 
-    query = text(query_str)
-    result = db.session.execute(query, {'point': f'POINT({lon} {lat})', 'radius_meters': radius_meters})
+def record_request(longitude, latitude, radius, catering, commercial, production, service, office):
+    right_now = datetime.datetime.now()
+    new_request = Requests(DATE_TIME = right_now, LONGITUDE=longitude, LATITUDE=latitude, RADIUS=radius, CATERING=catering, COMMERCIAL=commercial, PRODUCTION=production, SERVICE=service, OFFICE=office)
+    db.session.add(new_request)
+    db.session.commit()
 
+# Define routes
+@app.route('/')
+def home():
+    #To be removed later
+    #Query for all the elements of the places table
+    places = db.session.query(Places).first()
     places_list = []
-    for row in result:
-        place_dict = {
-            'PLACE_ID': row.PLACE_ID,
-            'NAME': row.NAME,
-            'LATITUDE': row.LATITUDE,
-            'LONGITUDE': row.LONGITUDE,
-        }
+    for place in places:
+        places_list.append(Places.place_dict(place))
+    return jsonify(places=places_list)
+
+@app.route('/get_places', methods=['GET'])
+def get_places():
+    try:
+        lat = float(request.args.get('lat'))
+    except:
+        return jsonify({"error": "Latitude must be a valid number"}), 400
+    try:
+        lon = float(request.args.get('lon'))
+    except:
+        return jsonify({"error": "Longitude must be a valid number"}), 400
+    try:
+        radius = request.args.get('radius', '2000')
+    except:
+        return jsonify({"error": "Radius must be a valid number"}), 400
+    catering = request.args.get('catering', 'false').lower() == 'true'
+    commercial = request.args.get('commercial', 'false').lower() == 'true'
+    production = request.args.get('production', 'false').lower() == 'true'
+    service = request.args.get('service', 'false').lower() == 'true'
+    office = request.args.get('office', 'false').lower() == 'true'
+
+    # For debugging
+    print(f"Latitude: {lat}, Longitude: {lon}, Radius: {radius_meters}")
+    print(f"Category selections - Catering: {catering}, Commercial: {commercial}, Production: {production}, Service: {service}, Office: {office}")
+
+    query = build_query(catering, commercial, production, service, office)
+    results = db.session.execute(query, {'point': f'POINT({lon} {lat})', 'radius_meters': radius_meters})
+    #record_request(lat, lon, radius_meters, catering, commercial, production, service, office) #Disabled until registering users and login are properly implemented in the frontend
+    places_list = []
+    for place in results:
+        place_dict = Places.place_dict(place) #This is a method in the Places class that converts the row to a dictionary
         if place_dict not in places_list:
             places_list.append(place_dict)
-    
+        else:
+            continue
     print(f"Found places: {places_list}")
-
     return jsonify(places=places_list)
 
 
