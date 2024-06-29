@@ -105,7 +105,47 @@ def get_solar_data_average(lon, lat):
         print("Response Content:", response.content.decode('utf-8'))
         return None
 
-def build_query(catering, commercial, production, service, office):
+def record_request(longitude, latitude, radius, catering, commercial, production, service, office):
+    right_now = datetime.datetime.now()
+    new_request = Requests(DATE_TIME = right_now, LONGITUDE=longitude, LATITUDE=latitude, RADIUS=radius, CATERING=catering, COMMERCIAL=commercial, PRODUCTION=production, SERVICE=service, OFFICE=office)
+    db.session.add(new_request)
+    db.session.commit()
+
+# Define routes
+@app.route('/')
+def home():
+    #To be removed later
+    #Query for all the elements of the places table
+    places = db.session.query(Places).all()
+    places_list = []
+    for place in places:
+        place_dict = Places.place_dict(place) #This is a method in the Places class that converts the row to a dictionary
+        #Take away the "Location" key from the dictionary
+        place_dict.pop("Location")
+        places_list.append(Places.place_dict(place)) 
+        if len(places_list) > 20:
+            break
+    return jsonify(places=places_list)
+
+@app.route('/get_places', methods=['GET'])
+def get_places():
+    try:
+        lat = float(request.args.get('lat'))
+    except:
+        return jsonify({"error": "Latitude must be a valid number"}), 400
+    try:
+        lon = float(request.args.get('lon'))
+    except:
+        return jsonify({"error": "Longitude must be a valid number"}), 400
+    catering = request.args.get('catering', 'false').lower() == 'true'
+    commercial = request.args.get('commercial', 'false').lower() == 'true'
+    production = request.args.get('production', 'false').lower() == 'true'
+    service = request.args.get('service', 'false').lower() == 'true'
+    office = request.args.get('office', 'false').lower() == 'true'
+
+    # For debugging
+    print(f"Latitude: {lat}, Longitude: {lon}, Radius: {radius_meters}")
+    print(f"Category selections - Catering: {catering}, Commercial: {commercial}, Production: {production}, Service: {service}, Office: {office}")
     categories = {
         'CATERING': catering,
         'COMMERCIAL': commercial,
@@ -124,52 +164,7 @@ def build_query(catering, commercial, production, service, office):
         SELECT * FROM Places
         WHERE ({where_clause}) AND LOCATION.STDistance(geography::STGeomFromText(:point, 4326)) <= :radius_meters
     """
-    return text(query_str)
-
-def record_request(longitude, latitude, radius, catering, commercial, production, service, office):
-    right_now = datetime.datetime.now()
-    new_request = Requests(DATE_TIME = right_now, LONGITUDE=longitude, LATITUDE=latitude, RADIUS=radius, CATERING=catering, COMMERCIAL=commercial, PRODUCTION=production, SERVICE=service, OFFICE=office)
-    db.session.add(new_request)
-    db.session.commit()
-
-# Define routes
-@app.route('/')
-def home():
-    #To be removed later
-    #Query for all the elements of the places table
-    places = db.session.query(Places).all()
-    places_list = []
-    for place in places:
-        places_list.append(Places.place_dict(place))
-        if len(places_list) > 20:
-            break
-    return jsonify(places=places_list)
-
-@app.route('/get_places', methods=['GET'])
-def get_places():
-    try:
-        lat = float(request.args.get('lat'))
-    except:
-        return jsonify({"error": "Latitude must be a valid number"}), 400
-    try:
-        lon = float(request.args.get('lon'))
-    except:
-        return jsonify({"error": "Longitude must be a valid number"}), 400
-    try:
-        radius = request.args.get('radius', '2000')
-    except:
-        return jsonify({"error": "Radius must be a valid number"}), 400
-    catering = request.args.get('catering', 'false').lower() == 'true'
-    commercial = request.args.get('commercial', 'false').lower() == 'true'
-    production = request.args.get('production', 'false').lower() == 'true'
-    service = request.args.get('service', 'false').lower() == 'true'
-    office = request.args.get('office', 'false').lower() == 'true'
-
-    # For debugging
-    print(f"Latitude: {lat}, Longitude: {lon}, Radius: {radius_meters}")
-    print(f"Category selections - Catering: {catering}, Commercial: {commercial}, Production: {production}, Service: {service}, Office: {office}")
-
-    query = build_query(catering, commercial, production, service, office)
+    query = text(query_str)
     results = db.session.execute(query, {'point': f'POINT({lon} {lat})', 'radius_meters': radius_meters})
     #record_request(lat, lon, radius_meters, catering, commercial, production, service, office) #Disabled until registering users and login are properly implemented in the frontend
     places_list = []
