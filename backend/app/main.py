@@ -47,12 +47,13 @@ app.after_request(add_cors_headers)
 
 
 
+
 #Below the authentication hashing I used for my capstone, we can modify them later as per our database schema -Andres
 def hash_password(password): #Hashes the password so that it is stored securely in the database
     ph = PasswordHasher()
     return ph.hash(password)
 
-def verify_password(hashed_password, password): #checks the password against the hashed password in the database
+def check_password(hashed_password, password): #checks the password against the hashed password in the database
     ph = PasswordHasher()
     try:
         ph.verify(hashed_password, password)
