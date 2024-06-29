@@ -6,9 +6,18 @@ const api = axios.create({
   withCredentials: true, // To handle cookies for sessions
 });
 
-export const getPlaces = async (lat, lon, radius = 2000) => {
+export const getPlaces = async (lat, lon, radius = 2000, categories = { catering: true, commercial: true, production: true, service: true, office: true }) => {
   const response = await api.get('/get_places', {
-    params: { lat, lon, radius },
+    params: { 
+      lat, 
+      lon, 
+      radius,
+      catering: categories.catering,
+      commercial: categories.commercial,
+      production: categories.production,
+      service: categories.service,
+      office: categories.office
+    },
   });
   return response.data;
 };
