@@ -20,11 +20,11 @@ const MapComponent: React.FC = () => {
   const [businesses, setBusinesses] = useState<any[]>([]);
   const [radius, setRadius] = useState<number>(2000); // 2km default
   const [selectedCategories, setSelectedCategories] = useState({
-    catering: true,
-    commercial: true,
-    production: true,
-    service: true,
-    office: true
+    catering: 1,
+    commercial: 1,
+    production: 1,
+    service: 1,
+    office: 1
   });
 
   const handleMapClick = async (e: L.LeafletMouseEvent) => {
