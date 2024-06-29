@@ -137,10 +137,12 @@ def record_request(longitude, latitude, radius, catering, commercial, production
 def home():
     #To be removed later
     #Query for all the elements of the places table
-    places = db.session.query(Places).first()
+    places = db.session.query(Places).all()
     places_list = []
     for place in places:
         places_list.append(Places.place_dict(place))
+        if len(places_list) > 20:
+            break
     return jsonify(places=places_list)
 
 @app.route('/get_places', methods=['GET'])
