@@ -65,7 +65,5 @@ export const siteConfig = {
   ],
   links: {
     github: "https://github.com/Amalaga19/Barter-Project",
-    docs: "https://nextui.org",
-    sponsor: "https://patreon.com/jrgarciadev",
   },
 };

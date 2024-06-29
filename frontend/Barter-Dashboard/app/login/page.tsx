@@ -25,9 +25,11 @@ const LoginPage = () => {
     <div className="flex flex-col items-center justify-center bg-black text-white p-8 rounded-2xl">
       <h2 className="text-center text-2xl font-bold">Get started</h2>
       <div className="mt-5 w-full max-w-md">
-        <Button className="mb-4 w-full" onClick={handleLogin}>
-          Log in
-        </Button>
+        <NextLink href="/userlogin" passHref>
+          <Button as="a" className="mb-4 w-full" onClick={handleLogin}>
+            Log in
+          </Button>
+        </NextLink>
         <NextLink href="/signup" passHref>
           <Button as="a" className="w-full">
             Sign up

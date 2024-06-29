@@ -4,17 +4,16 @@ from dotenv import load_dotenv
 import os
 import requests
 import argon2
-import folium
 from argon2 import PasswordHasher
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.schema import Identity
 from data_model import db, Users, Requests, Places
-from sqlalchemy import text  
+from sqlalchemy import text
+import datetime
 
 radius_meters = 2000
 results_number = 500
-
 # Load environment variables from .env file
 load_dotenv()
 
@@ -48,12 +47,13 @@ app.after_request(add_cors_headers)
 
 
 
+
 #Below the authentication hashing I used for my capstone, we can modify them later as per our database schema -Andres
 def hash_password(password): #Hashes the password so that it is stored securely in the database
     ph = PasswordHasher()
     return ph.hash(password)
 
-def verify_password(hashed_password, password): #checks the password against the hashed password in the database
+def check_password(hashed_password, password): #checks the password against the hashed password in the database
     ph = PasswordHasher()
     try:
         ph.verify(hashed_password, password)
@@ -90,11 +90,12 @@ def get_solar_data_average(lon, lat):
                     except ValueError as e:
                         # Skip entries with invalid data and print an error message
                         print(f"Skipping entry due to error: {e}, entry content: {entry}")
-            average = radiation_total / count
             
             if count==0:
                 return 0
             
+            average = radiation_total / count
+
             return average
         else:
             print("Error: 'outputs' or 'monthly' key not found in the response.")
@@ -104,131 +105,98 @@ def get_solar_data_average(lon, lat):
         print("Response Content:", response.content.decode('utf-8'))
         return None
 
+def build_query(catering, commercial, production, service, office):
+    categories = {
+        'CATERING': catering,
+        'COMMERCIAL': commercial,
+        'PRODUCTION': production,
+        'SERVICE': service,
+        'OFFICE': office
+    }
 
+    category_conditions = [f"{category} = 1" for category, is_selected in categories.items() if is_selected]
 
+    if not category_conditions:
+        return jsonify({"error": "At least one category must be selected"}), 400
 
-#Functions to list the subcategories a place has based only on the categories chosen. Commented out because it may not be necessary.
-# def list_categories_commercial(place_id):
-#     #Query the database to see which columns that begin with 'COMMERCIAL' are True for the place_id
-#     place = Places.query.filter_by(ID = place_id).first()
-#     commercial_categories = []
-#     for column in place:
-#         if column.startswith('COMMERCIAL') and place[column] == True:
-#             commercial_categories.append(column)
-#     return commercial_categories
+    where_clause = " OR ".join(category_conditions)
+    query_str = f"""
+        SELECT * FROM Places
+        WHERE ({where_clause}) AND LOCATION.STDistance(geography::STGeomFromText(:point, 4326)) <= :radius_meters
+    """
+    return text(query_str)
 
-# def list_categories_catering(place_id):
-#     #Query the database to see which columns that begin with 'CATERING' are True for the place_id
-#     place = Places.query.filter_by(ID = place_id).first()
-#     catering_categories = []
-#     for column in place:
-#         if column.startswith('CATERING') and place[column] == True:
-#             catering_categories.append(column)
-#     return catering_categories
+def record_request(longitude, latitude, radius, catering, commercial, production, service, office):
+    right_now = datetime.datetime.now()
+    new_request = Requests(DATE_TIME = right_now, LONGITUDE=longitude, LATITUDE=latitude, RADIUS=radius, CATERING=catering, COMMERCIAL=commercial, PRODUCTION=production, SERVICE=service, OFFICE=office)
+    db.session.add(new_request)
+    db.session.commit()
 
-# def list_categories_production(place_id):
-#     #Query the database to see which columns that begin with 'PRODUCTION' are True for the place_id
-#     place = Places.query.filter_by(ID = place_id).first()
-#     production_categories = []
-#     for column in place:
-#         if column.startswith('PRODUCTION') and place[column] == True:
-#             production_categories.append(column)
-#     return production_categories
-
-# def list_categories_service(place_id):
-#     #Query the database to see which columns that begin with 'SERVICE' are True for the place_id
-#     place = Places.query.filter_by(ID = place_id).first()
-#     service_categories = []
-#     for column in place:
-#         if column.startswith('SERVICE') and place[column] == True:
-#             service_categories.append(column)
-#     return service_categories
-
-# def list_categories_office(place_id):
-#     #Query the database to see which columns that begin with 'OFFICE' are True for the place_id
-#     place = Places.query.filter_by(ID = place_id).first()
-#     office_categories = []
-#     for column in place:
-#         if column.startswith('OFFICE') and place[column] == True:
-#             office_categories.append(column)
-#     return office_categories
-
-
-
-# Define routes
 # Define routes
 @app.route('/')
 def home():
     #To be removed later
-    places = db.session.query(Places.PLACE_ID, Places.NAME, Places.LATITUDE, Places.LONGITUDE).all()
-    places_list = [{'NAME': place.NAME, 'LATITUDE': place.LATITUDE, 'LONGITUDE': place.LONGITUDE} for place in places]
+    #Query for all the elements of the places table
+    places = db.session.query(Places).first()
+    places_list = []
+    for place in places:
+        places_list.append(Places.place_dict(place))
     return jsonify(places=places_list)
 
 @app.route('/get_places', methods=['GET'])
 def get_places():
-    lat = request.args.get('lat')
-    lon = request.args.get('lon')
-    radius = request.args.get('radius', '2000')
-    
-    if lat is None or lon is None:
-        return jsonify({"error": "Latitude and longitude are required parameters"}), 400
-
     try:
-        lat = float(lat)
-        lon = float(lon)
-        radius_meters = int(radius)
-    except ValueError:
-        return jsonify({"error": "Latitude and longitude must be valid numbers"}), 400
+        lat = float(request.args.get('lat'))
+    except:
+        return jsonify({"error": "Latitude must be a valid number"}), 400
+    try:
+        lon = float(request.args.get('lon'))
+    except:
+        return jsonify({"error": "Longitude must be a valid number"}), 400
+    try:
+        radius = request.args.get('radius', '2000')
+    except:
+        return jsonify({"error": "Radius must be a valid number"}), 400
+    catering = request.args.get('catering', 'false').lower() == 'true'
+    commercial = request.args.get('commercial', 'false').lower() == 'true'
+    production = request.args.get('production', 'false').lower() == 'true'
+    service = request.args.get('service', 'false').lower() == 'true'
+    office = request.args.get('office', 'false').lower() == 'true'
 
-    query = text("""
-        SELECT PLACE_ID, NAME, LATITUDE, LONGITUDE
-        FROM Places
-        WHERE LOCATION.STDistance(geography::Point(:lat, :lon, 4326)) <= :radius_meters
-    """)
+    # For debugging
+    print(f"Latitude: {lat}, Longitude: {lon}, Radius: {radius_meters}")
+    print(f"Category selections - Catering: {catering}, Commercial: {commercial}, Production: {production}, Service: {service}, Office: {office}")
 
-    result = db.session.execute(query, {'lat': lat, 'lon': lon, 'radius_meters': radius_meters})
-
+    query = build_query(catering, commercial, production, service, office)
+    results = db.session.execute(query, {'point': f'POINT({lon} {lat})', 'radius_meters': radius_meters})
+    #record_request(lat, lon, radius_meters, catering, commercial, production, service, office) #Disabled until registering users and login are properly implemented in the frontend
     places_list = []
-    ''' This will be made into a new function later
-    if catering == True:
-        category_list.append('CATERING')
-    if commercial == True:
-        category_list.append('COMMERCIAL')
-    if production == True:
-        category_list.append('PRODUCTION')
-    if service == True:
-        category_list.append('SERVICE')
-    if office == True:
-        category_list.append('OFFICE')
-    #Query the database for those places where the columns in the category_list are True
-    for category in category_list:
-        places = Places.query.filter_by(category = True).filter_by("CITY" = city).all()
-        for place in places:
-            if place not in places_list:
-                places_list.append(place)
-            else:
-                continue
-    pass
-'''
-
-
-    for row in result:
-        places_list.append({
-            'PLACE_ID': row.PLACE_ID,
-            'NAME': row.NAME,
-            'LATITUDE': row.LATITUDE,
-            'LONGITUDE': row.LONGITUDE,
-        })
-
+    for place in results:
+        place_dict = Places.place_dict(place) #This is a method in the Places class that converts the row to a dictionary
+        if place_dict not in places_list:
+            places_list.append(place_dict)
+        else:
+            continue
+    print(f"Found places: {places_list}")
     return jsonify(places=places_list)
 
 
 @app.route('/get_solar', methods=['GET'])
-def get_solar(lon, lat):
+def get_solar():
+    lon = request.args.get('lon', type=float)
+    lat = request.args.get('lat', type=float)
+    
+    if lon is None or lat is None:
+        return jsonify({"error": "Longitude and latitude are required parameters"}), 400
+
     lon = round(lon, 3)
     lat = round(lat, 3)
     radiation_average = get_solar_data_average(lon, lat)
-    return jsonify(radiation = f"{radiation_average:.2f}")
+    
+    if radiation_average is None:
+        return jsonify({"error": "Failed to retrieve solar data"}), 500
+    
+    return jsonify(radiation=f"{radiation_average:.2f}")
 
 #Login-Logout routes I used for Capstone - Andres
 
