@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { TileLayer, Marker, Circle, Popup } from 'react-leaflet';
+import { TileLayer, Marker, Circle, Popup, useMapEvents, MapContainer } from 'react-leaflet';
 import L, { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getColorForCategory } from './utils';
@@ -19,19 +19,35 @@ const center: LatLngExpression = [40.4168, -3.7038]; // Madrid coordinates
 const MapComponent: React.FC = () => {
   const [businesses, setBusinesses] = useState<any[]>([]);
   const [radius, setRadius] = useState<number>(2000); // 2km default
+  const [selectedCategories, setSelectedCategories] = useState({
+    catering: true,
+    commercial: true,
+    production: true,
+    service: true,
+    office: true
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getPlaces(center[0], center[1], radius);
-        setBusinesses(data.places);
-      } catch (error) {
-        console.error('Error fetching places:', error);
-      }
-    };
+  const handleMapClick = async (e: L.LeafletMouseEvent) => {
+    const { lat, lng } = e.latlng;
+    fetchData(Number(lat.toFixed(6)), Number(lng.toFixed(6)));
+  };
 
-    fetchData();
-  }, [radius]);
+  const fetchData = async (lat: number, lon: number) => {
+    try {
+      const data = await getPlaces(lat, lon, radius, selectedCategories);
+      setBusinesses(data.places);
+    } catch (error) {
+      console.error('Error fetching places:', error);
+    }
+  };
+
+  // Use a wrapper component to handle map events
+  const MapEvents = () => {
+    useMapEvents({
+      click: handleMapClick,
+    });
+    return null;
+  };
 
   return (
     <div className="relative" style={{ height: '500px', width: '100%' }}>
@@ -53,6 +69,7 @@ const MapComponent: React.FC = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
+        <MapEvents /> {/* Add MapEvents component here */}
         {businesses.map((business, idx) => {
           const position: LatLngExpression = [parseFloat(business.LATITUDE), parseFloat(business.LONGITUDE)];
           const categories = business.categories?.split(',').map(category => category.trim());
