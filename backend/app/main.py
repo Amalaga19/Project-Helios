@@ -45,8 +45,9 @@ def add_cors_headers(response):
 app.after_request(add_cors_headers)
 
 
-
-
+long_query = f"""
+        SELECT PLACE_ID, NAME, LATITUDE, LONGITUDE, COUNTRY, STATE, CITY, DISTRICT, NEIGHBOURHOOD, SUBURB, STREET, POSTCODE, CATERING, COMMERCIAL, OFFICE, PRODUCTION, SERVICE, SERVICE_RECYCLING, SERVICE_VEHICLE, SERVICE_POLICE, SERVICE_SOCIAL_FACILITY, SERVICE_FINANCIAL, SERVICE_FUNERAL_DIRECTORS, SERVICE_POST, SERVICE_BEAUTY, SERVICE_ESTATE_AGENT, SERVICE_TAXI, SERVICE_TRAVEL_AGENCY, SERVICE_CLEANING, SERVICE_BOOKMAKER, SERVICE_TAILOR, SERVICE_LOCKSMITH, COMMERCIAL_HOUSEWARE_AND_HARDWARE, COMMERCIAL_ELEKTRONICS, COMMERCIAL_TRADE, COMMERCIAL_OUTDOOR_AND_SPORT, COMMERCIAL_SHOPPING_MALL, COMMERCIAL_SUPERMARKET, COMMERCIAL_MARKETPLACE, COMMERCIAL_DEPARTMENT_STORE, COMMERCIAL_TICKETS_AND_LOTTERY, COMMERCIAL_FURNITURE_AND_INTERIOR, COMMERCIAL_BOOKS, COMMERCIAL_CONVENIENCE, COMMERCIAL_GARDEN, COMMERCIAL_VEHICLE, COMMERCIAL_HEALTH_AND_BEAUTY, COMMERCIAL_FLORIST, COMMERCIAL_SMOKING, COMMERCIAL_FOOD_AND_DRINK, COMMERCIAL_KIOSK, COMMERCIAL_CLOTHING, COMMERCIAL_HOBBY, COMMERCIAL_TOY_AND_GAME, COMMERCIAL_DISCOUNT_STORE, COMMERCIAL_NEWSAGENT, COMMERCIAL_PET, COMMERCIAL_GIFT_AND_SOUVENIR, COMMERCIAL_STATIONERY, COMMERCIAL_JEWELRY, COMMERCIAL_BAG, COMMERCIAL_CHEMIST, COMMERCIAL_ART, COMMERCIAL_EROTIC, COMMERCIAL_WATCHES, COMMERCIAL_SECOND_HAND, COMMERCIAL_VIDEO_AND_MUSIC, COMMERCIAL_ANTIQUES, COMMERCIAL_GAS, COMMERCIAL_BABY_GOODS, COMMERCIAL_ENERGY, COMMERCIAL_WEDDING, COMMERCIAL_WEAPONS, CATERING_RESTAURANT, CATERING_PUB, CATERING_FAST_FOOD, CATERING_BAR, CATERING_CAFE, CATERING_TAPROOM, CATERING_BIERGARTEN, CATERING_ICE_CREAM, CATERING_FOOD_COURT, OFFICE_GOVERNMENT, OFFICE_EDUCATIONAL_INSTITUTION, OFFICE_FOUNDATION, OFFICE_COMPANY, OFFICE_RESEARCH, OFFICE_DIPLOMATIC, OFFICE_INSURANCE, OFFICE_POLITICAL_PARTY, OFFICE_EMPLOYMENT_AGENCY, OFFICE_NON_PROFIT, OFFICE_ESTATE_AGENT, OFFICE_ASSOCIATION, OFFICE_FINANCIAL, OFFICE_IT, OFFICE_NOTARY, OFFICE_ENERGY_SUPPLIER, OFFICE_COWORKING, OFFICE_LAWYER, OFFICE_CHARITY, OFFICE_SECURITY, OFFICE_TRAVEL_AGENT, OFFICE_ARCHITECT, OFFICE_TAX_ADVISOR, OFFICE_ACCOUNTANT, OFFICE_RELIGION, OFFICE_NEWSPAPER, OFFICE_TELECOMMUNICATION, OFFICE_CONSULTING, OFFICE_ADVERTISING_AGENCY, OFFICE_LOGISTICS, OFFICE_FINANCIAL_ADVISOR, PRODUCTION_FACTORY, PRODUCTION_BREWERY, PRODUCTION_POTTERY, PRODUCTION_WINERY
+        FROM PLACES"""
 
 #Below the authentication hashing I used for my capstone, we can modify them later as per our database schema -Andres
 def hash_password(password): #Hashes the password so that it is stored securely in the database
@@ -105,6 +106,27 @@ def get_solar_data_average(lon, lat):
         print("Response Content:", response.content.decode('utf-8'))
         return None
 
+def get_query(catering, commercial, production, service, office):
+    categories = {
+        'CATERING': catering,
+        'COMMERCIAL': commercial,
+        'PRODUCTION': production,
+        'SERVICE': service,
+        'OFFICE': office
+    }
+
+    category_conditions = [f"{category} = 1" for category, is_selected in categories.items() if is_selected]
+
+    if not category_conditions:
+        return jsonify({"error": "At least one category must be selected"}), 400
+
+    where_clause = " OR ".join(category_conditions)
+    query = f"""
+        {long_query}
+        WHERE ({where_clause}) AND LOCATION.STDistance(geography::STGeomFromText(:point, 4326)) <= :radius_meters
+    """
+    return query
+
 def record_request(longitude, latitude, radius, catering, commercial, production, service, office):
     right_now = datetime.datetime.now()
     new_request = Requests(DATE_TIME = right_now, LONGITUDE=longitude, LATITUDE=latitude, RADIUS=radius, CATERING=catering, COMMERCIAL=commercial, PRODUCTION=production, SERVICE=service, OFFICE=office)
@@ -116,12 +138,11 @@ def record_request(longitude, latitude, radius, catering, commercial, production
 def home():
     #To be removed later
     #Query for all the elements of the places table
-    places = db.session.query(Places).all()
+    query = text(long_query)
+    places = db.session.execute(query)
     places_list = []
     for place in places:
         place_dict = Places.place_dict(place) #This is a method in the Places class that converts the row to a dictionary
-        #Take away the "Location" key from the dictionary
-        place_dict.pop("Location")
         places_list.append(Places.place_dict(place)) 
         if len(places_list) > 20:
             break
@@ -137,36 +158,17 @@ def get_places():
         lon = float(request.args.get('lon'))
     except:
         return jsonify({"error": "Longitude must be a valid number"}), 400
-    catering = request.args.get('catering', 'false').lower() == 'true'
-    commercial = request.args.get('commercial', 'false').lower() == 'true'
-    production = request.args.get('production', 'false').lower() == 'true'
-    service = request.args.get('service', 'false').lower() == 'true'
-    office = request.args.get('office', 'false').lower() == 'true'
+    catering = request.args.get('catering', '0').lower() == '1'
+    commercial = request.args.get('commercial', '0').lower() == '1'
+    production = request.args.get('production', '0').lower() == '1'
+    service = request.args.get('service', '0').lower() == '1'
+    office = request.args.get('office', '0').lower() == '1'
 
     # For debugging
     print(f"Latitude: {lat}, Longitude: {lon}, Radius: {radius_meters}")
     print(f"Category selections - Catering: {catering}, Commercial: {commercial}, Production: {production}, Service: {service}, Office: {office}")
-    categories = {
-        'CATERING': catering,
-        'COMMERCIAL': commercial,
-        'PRODUCTION': production,
-        'SERVICE': service,
-        'OFFICE': office
-    }
-
-    category_conditions = [f"{category} = 1" for category, is_selected in categories.items() if is_selected]
-
-    if not category_conditions:
-        return jsonify({"error": "At least one category must be selected"}), 400
-
-    where_clause = " OR ".join(category_conditions)
-    query_str = f"""
-        SELECT * FROM Places
-        WHERE ({where_clause}) AND LOCATION.STDistance(geography::STGeomFromText(:point, 4326)) <= :radius_meters
-    """
-    query = text(query_str)
-    results = db.session.execute(query, {'point': f'POINT({lon} {lat})', 'radius_meters': radius_meters})
-    #record_request(lat, lon, radius_meters, catering, commercial, production, service, office) #Disabled until registering users and login are properly implemented in the frontend
+    query = text(get_query(catering, commercial, production, service, office))
+    results = db.session.execute(query, {'point': f'POINT({lon} {lat})', 'radius_meters': radius_meters})    #record_request(lat, lon, radius_meters, catering, commercial, production, service, office) #Disabled until registering users and login are properly implemented in the frontend
     places_list = []
     for place in results:
         place_dict = Places.place_dict(place) #This is a method in the Places class that converts the row to a dictionary
