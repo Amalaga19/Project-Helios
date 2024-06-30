@@ -32,10 +32,28 @@ const MapComponent: React.FC = () => {
     fetchData(Number(lat.toFixed(6)), Number(lng.toFixed(6)));
   };
 
+  const transformData = (data) => {
+    return data.places.map(place => {
+      const categories = Object.keys(place.categories)
+        .filter(key => place.categories[key])
+        .join(',');
+
+      return {
+        NAME: place.name,
+        LATITUDE: place.latitude.toString(),
+        LONGITUDE: place.longitude.toString(),
+        categories,
+        BARRIO: place.suburb || place.district || '',
+        ADDRESS: `${place.street}, ${place.city}, ${place.postcode}`
+      };
+    });
+  };
+
   const fetchData = async (lat: number, lon: number) => {
     try {
       const data = await getPlaces(lat, lon, radius, selectedCategories);
-      setBusinesses(data.places);
+      const transformedData = transformData(data);
+      setBusinesses(transformedData);
     } catch (error) {
       console.error('Error fetching places:', error);
     }
@@ -60,7 +78,7 @@ const MapComponent: React.FC = () => {
           min="1"
           max="5"
           step="0.1"
-          value={radius / 1000}
+          value={radius / 2000}
           onChange={(e) => setRadius(Number(e.target.value) * 1000)}
         />
       </div>
