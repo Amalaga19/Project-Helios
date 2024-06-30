@@ -10,7 +10,7 @@ export const categoryColors = {
 
 export const getColorForCategory = (categories) => {
   if (categories.length > 1) {
-    return categoryColors[categories[0]] || 'grey';
+    return categoryColors.multiple;
   }
-  return categoryColors.multicolored;
+  return categoryColors[categories[0]] || 'grey';
 };

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { TileLayer, Marker, Circle, Popup, useMapEvents, MapContainer } from 'react-leaflet';
+import { TileLayer, CircleMarker, Circle, Popup, useMapEvents, MapContainer } from 'react-leaflet';
 import L, { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getColorForCategory } from './utils';
@@ -19,6 +19,7 @@ const center: LatLngExpression = [40.4168, -3.7038]; // Madrid coordinates
 const MapComponent: React.FC = () => {
   const [businesses, setBusinesses] = useState<any[]>([]);
   const [radius, setRadius] = useState<number>(2000); // 2km default
+  const [mapCenter, setMapCenter] = useState<LatLngExpression>(center); // Center of the map
   const [selectedCategories, setSelectedCategories] = useState({
     catering: 1,
     commercial: 1,
@@ -29,6 +30,7 @@ const MapComponent: React.FC = () => {
 
   const handleMapClick = async (e: L.LeafletMouseEvent) => {
     const { lat, lng } = e.latlng;
+    setMapCenter([lat, lng]);
     fetchData(Number(lat.toFixed(6)), Number(lng.toFixed(6)));
   };
 
@@ -82,19 +84,34 @@ const MapComponent: React.FC = () => {
           onChange={(e) => setRadius(Number(e.target.value) * 1000)}
         />
       </div>
-      <DynamicMap center={center} zoom={13} style={{ height: '100%', width: '100%' }}>
+      <DynamicMap center={mapCenter} zoom={13} style={{ height: '100%', width: '100%' }}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
         <MapEvents /> {/* Add MapEvents component here */}
+        <Circle
+          center={mapCenter}
+          radius={radius}
+          color="grey"
+          fillColor="grey"
+          fillOpacity={0.5}
+        />
+
         {businesses.map((business, idx) => {
           const position: LatLngExpression = [parseFloat(business.LATITUDE), parseFloat(business.LONGITUDE)];
           const categories = business.categories?.split(',').map(category => category.trim());
           const color = getColorForCategory(categories);
 
           return (
-            <Marker key={idx} position={position}>
+            <CircleMarker
+              key={idx}
+              center={position}
+              radius={3} // Adjust the size as needed
+              color={color}
+              fillColor={color}
+              fillOpacity={0.8}
+            >
               <Popup>
                 <div>
                   <h3>{business.NAME}</h3>
@@ -105,13 +122,7 @@ const MapComponent: React.FC = () => {
                   <p>Latitude: {business.LATITUDE}</p>
                 </div>
               </Popup>
-              <Circle
-                center={position}
-                radius={radius}
-                color={color}
-                fillColor={color}
-              />
-            </Marker>
+            </CircleMarker>
           );
         })}
       </DynamicMap>
