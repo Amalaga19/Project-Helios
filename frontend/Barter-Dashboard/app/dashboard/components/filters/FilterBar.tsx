@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { BusinessCategoryFilter } from './BusinessCategoryFilter';
-import SeeBusinessesButton from './SeeBusinessesButton';
 
 export const FilterBar = ({ selectedCategories, setSelectedCategories }) => {
   return (
@@ -14,9 +13,6 @@ export const FilterBar = ({ selectedCategories, setSelectedCategories }) => {
             selectedCategories={selectedCategories}
             setSelectedCategories={setSelectedCategories}
           />
-        </div>
-        <div className="self-end">
-          <SeeBusinessesButton />
         </div>
       </div>
     </div>

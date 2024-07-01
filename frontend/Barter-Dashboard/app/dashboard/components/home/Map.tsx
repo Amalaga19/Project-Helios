@@ -16,8 +16,8 @@ const DynamicMap = dynamic(
 
 const center: LatLngExpression = [40.4168, -3.7038]; // Madrid coordinates
 
-const MapComponent = ({ selectedCategories = [] }) => {
-  const [businesses, setBusinesses] = useState<any[]>([]);
+const MapComponent = ({ selectedCategories = [], setBusinesses }) => {
+  const [localBusinesses, setLocalBusinesses] = useState<any[]>([]);
   const [radius, setRadius] = useState<number>(2000); // 2km default
   const [mapCenter, setMapCenter] = useState<LatLngExpression>(center); // Center of the map
 
@@ -47,7 +47,8 @@ const MapComponent = ({ selectedCategories = [] }) => {
     try {
       const data = await getPlaces(lat, lon, radius, selectedCategories);
       const transformedData = transformData(data);
-      setBusinesses(transformedData);
+      setLocalBusinesses(transformedData);
+      setBusinesses(transformedData); // Update the parent component's state
     } catch (error) {
       console.error('Error fetching places:', error);
     }
@@ -68,12 +69,12 @@ const MapComponent = ({ selectedCategories = [] }) => {
   // Filter businesses by selected categories
   const filteredBusinesses = useMemo(() => {
     if (!Array.isArray(selectedCategories) || selectedCategories.length === 0) {
-      return businesses;
+      return localBusinesses;
     }
-    return businesses.filter(business =>
+    return localBusinesses.filter(business =>
       business.categories.some(category => selectedCategories.includes(category))
     );
-  }, [businesses, selectedCategories]);
+  }, [localBusinesses, selectedCategories]);
 
   return (
     <div className="relative" style={{ height: '500px', width: '100%' }}>
@@ -87,7 +88,11 @@ const MapComponent = ({ selectedCategories = [] }) => {
           max="5"
           step="0.1"
           value={radius / 2000}
-          onChange={(e) => setRadius(Number(e.target.value) * 1000)}
+          onChange={(e) => {
+            const newRadius = Number(e.target.value) * 1000;
+            setRadius(newRadius);
+            fetchData(mapCenter[0], mapCenter[1]); // Fetch data with new radius
+          }}
         />
       </div>
       <DynamicMap center={mapCenter} zoom={13} style={{ height: '100%', width: '100%' }}>
