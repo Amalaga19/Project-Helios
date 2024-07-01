@@ -1,17 +1,14 @@
-// app/team/layout.tsx
+import React from "react";
+import clsx from "clsx";
+import { fontSans } from "@/config/fonts";
 
-export default function TeamLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <section className="flex flex-col items-center justify-center gap-8 py-20 px-4 md:py-32 md:px-8 bg-black text-white text-center">
-      <div className="inline-block max-w-screen-lg text-center justify-center">
+    <div className={clsx("relative flex flex-col h-screen", fontSans.variable)}>
+      <main className="container mx-auto max-w-7xl pt-16 px-8 md:px-12 flex-grow">
         {children}
-      </div>
-    </section>
+      </main>
+      <footer className="w-full flex items-center justify-center py-3"></footer>
+    </div>
   );
 }
-
-  
