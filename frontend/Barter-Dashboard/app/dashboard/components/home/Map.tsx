@@ -6,7 +6,7 @@ import { TileLayer, CircleMarker, Circle, Popup, useMapEvents, MapContainer } fr
 import L, { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getColorForCategory } from './utils';
-import { getPlaces } from '@/utils/api';
+import { getPlaces, getSolarData } from '@/utils/api';
 
 // Dynamically import react-leaflet to prevent SSR issues
 const DynamicMap = dynamic(
@@ -119,19 +119,46 @@ const MapComponent = ({ selectedCategories = [] }) => {
               fillOpacity={0.8}
             >
               <Popup>
-                <div>
-                  <h3>{business.NAME}</h3>
-                  <p>Categories: {business.categories?.join(', ')}</p>
-                  <p>Barrio: {business.BARRIO}</p>
-                  <p>Address: {business.ADDRESS}</p>
-                  <p>Longitude: {business.LONGITUDE}</p>
-                  <p>Latitude: {business.LATITUDE}</p>
-                </div>
+                <PopupContent business={business} />
               </Popup>
             </CircleMarker>
           );
         })}
       </DynamicMap>
+    </div>
+  );
+};
+
+const PopupContent = ({ business }) => {
+  const [solarData, setSolarData] = useState(null);
+
+  useEffect(() => {
+    const fetchSolarData = async () => {
+      try {
+        const data = await getSolarData(business.LATITUDE, business.LONGITUDE);
+        setSolarData(data);
+      } catch (error) {
+        console.error('Error fetching solar data:', error);
+      }
+    };
+
+    fetchSolarData();
+  }, [business]);
+
+  return (
+    <div>
+      <h3>{business.NAME}</h3>
+      <p>Categories: {business.categories?.join(', ')}</p>
+      <p>Barrio: {business.BARRIO}</p>
+      <p>Address: {business.ADDRESS}</p>
+      <p>Longitude: {business.LONGITUDE}</p>
+      <p>Latitude: {business.LATITUDE}</p>
+      {solarData && (
+        <>
+          <h4>Solar Data:</h4>
+          <p>{JSON.stringify(solarData)}</p>
+        </>
+      )}
     </div>
   );
 };
