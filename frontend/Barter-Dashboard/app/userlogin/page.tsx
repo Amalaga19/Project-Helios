@@ -7,13 +7,12 @@ import { useRouter } from 'next/navigation';
 const UserLogin = () => {
   const { login } = useAuth();
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({ username: "", password: "", form: "" });
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const validateUsername = (username) => {
+    return username.trim() !== "";
   };
 
   const validatePassword = (password) => {
@@ -21,25 +20,27 @@ const UserLogin = () => {
     return passwordRegex.test(password);
   };
 
-  const handleLogin = async () => {
-    let emailError = "";
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    let usernameError = "";
     let passwordError = "";
 
-    if (!validateEmail(email)) {
-      emailError = "Please enter a valid email address.";
+    if (!validateUsername(username)) {
+      usernameError = "Please enter a valid username.";
     }
 
     if (!validatePassword(password)) {
       passwordError = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.";
     }
 
-    if (emailError || passwordError) {
-      setErrors({ email: emailError, password: passwordError });
+    if (usernameError || passwordError) {
+      setErrors({ username: usernameError, password: passwordError });
       return;
     }
 
     try {
-      await login(email, password);
+      const response = await login(username, password);
+      localStorage.setItem('loggedInUser', username);
       router.push('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
@@ -51,13 +52,13 @@ const UserLogin = () => {
     <div className="flex flex-col items-center">
       <h1 className="text-2xl font-bold mb-6">Log in to your account</h1>
       <input
-        type="email"
-        placeholder="Email address*"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        type="text"
+        placeholder="Username*"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
         className="w-full max-w-md px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary"
       />
-      {errors.email && <p className="text-red-500 text-sm mb-4">{errors.email}</p>}
+      {errors.username && <p className="text-red-500 text-sm mb-4">{errors.username}</p>}
       <input
         type="password"
         placeholder="Password"
@@ -66,6 +67,7 @@ const UserLogin = () => {
         className="w-full max-w-md px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary"
       />
       {errors.password && <p className="text-red-500 text-sm mb-4">{errors.password}</p>}
+      {errors.form && <p className="text-red-500 text-sm mb-4">{errors.form}</p>}
       <button
         onClick={handleLogin}
         className="w-full max-w-md px-4 py-2 mb-4 text-white bg-secondary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary"
