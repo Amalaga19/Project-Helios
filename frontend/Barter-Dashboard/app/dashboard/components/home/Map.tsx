@@ -118,7 +118,7 @@ const MapComponent = ({ selectedCategories = [], setBusinesses }) => {
             <CircleMarker
               key={`${business.NAME}-${idx}`} // Ensure unique key
               center={position}
-              radius={3} // Adjust the size as needed
+              radius={2} // Adjust the size as needed
               color={color}
               fillColor={color}
               fillOpacity={0.8}

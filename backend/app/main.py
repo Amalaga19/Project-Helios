@@ -252,5 +252,13 @@ def logout():
     session.clear()
     return jsonify({"message": "Logged out."}), 200
 
+@app.route('/check-auth', methods=['GET'])
+def check_auth():
+    if 'username' in session:
+        return jsonify({"userId": session['username']}), 200
+    else:
+        return jsonify({"error": "Not authenticated"}), 401
+
+
 if __name__ == "__main__":
     app.run(debug=True)

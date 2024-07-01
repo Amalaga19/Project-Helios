@@ -1,51 +1,75 @@
-"use client";
-import { Button } from '@nextui-org/button';
-import { useAuth } from '../hooks/useAuth';
-import { Link } from '@nextui-org/link';
-import NextLink from "next/link";
-import router from 'next/router';
+// app/login/page.tsx
+'use client';
+
+import React from 'react';
+import { Button } from '@nextui-org/react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import LoginLayout from './layout';
 
 const LoginPage = () => {
-  const { setAuthToken, setUser } = useAuth();
+  const router = useRouter();
 
-  const handleLogin = async () => {
-    try {
-      // Replace with your login logic
-      const token = 'mockToken'; // Replace with the actual token
-      const userId = 'mockUserId'; // Replace with the actual user ID
-      setAuthToken(token);
-      setUser(userId);
-      router.push('/dashboard');
-    } catch (error) {
-      console.error('Login failed:', error);
-    }
+  const handleLogInClick = () => {
+    console.log('Log in button clicked');
+    router.push('/userlogin');
+  };
+
+  const handleSignUpClick = () => {
+    console.log('Sign up button clicked');
+    router.push('/signup');
   };
 
   return (
-    <div className="flex flex-col items-center justify-center bg-black text-white p-8 rounded-2xl">
-      <h2 className="text-center text-2xl font-bold">Get started</h2>
-      <div className="mt-5 w-full max-w-md">
-        <NextLink href="/userlogin" passHref>
-          <Button as="a" className="mb-4 w-full" onClick={handleLogin}>
-            Log in
-          </Button>
-        </NextLink>
-        <NextLink href="/signup" passHref>
-          <Button as="a" className="w-full">
-            Sign up
-          </Button>
-        </NextLink>
+    <LoginLayout>
+      <div className="flex flex-col justify-between bg-white text-purple-900 p-8 lg:w-8/12">
+        <nav className="flex items-center space-x-4 mb-8">
+          <Link href="/" passHref legacyBehavior>
+            <a>
+              <Image src="/logos/Icon_logo.png" alt="Project Helios Logo" width={36} height={36} />
+            </a>
+          </Link>
+          <Link href="/" passHref legacyBehavior>
+            <a className="text-2xl font-bold">
+              Project Helios<span className="text-purple-500"></span>
+            </a>
+          </Link>
+        </nav>
+        <div className="flex-1 flex flex-col justify-center">
+          <div className="text-3xl lg:text-5xl font-bold mb-8">
+            <p>Welcome back to Project Helios</p>
+            <p>Empowering Madrid with Solar Energy</p>
+            <p className="text-xl lg:text-2xl mt-4">
+              Log in to access our advanced tools and insights, helping you pinpoint the best locations for solar-powered generators
+            </p>
+          </div>
+        </div>
+        <div className="hidden lg:block"></div>
       </div>
-      <div className="mt-10 text-center text-gray-400 text-sm">
-        <Link href="https://openai.com/policies/terms-of-use" target="_blank" rel="noreferrer">
-          Terms of use
-        </Link>
-        {' | '}
-        <Link href="https://openai.com/policies/privacy-policy" target="_blank" rel="noreferrer">
-          Privacy policy
-        </Link>
+      <div className="flex flex-col items-center justify-between bg-black text-white p-8 lg:w-4/12">
+        <div className="w-full max-w-md text-center flex flex-col justify-center h-full">
+          <h2 className="text-3xl font-bold mb-8">Get started</h2>
+          <div className="flex justify-center space-x-4 mb-12">
+            <Button className="w-1/2" color="primary" radius="full" onClick={handleLogInClick}>
+              Log in
+            </Button>
+            <Button className="w-1/2" color="primary" radius="full" onClick={handleSignUpClick}>
+              Sign up
+            </Button>
+          </div>
+        </div>
+        <div className="text-sm text-gray-400 mb-8">
+          <Link href="https://openai.com/policies/terms-of-use" target="_blank" rel="noreferrer">
+            Terms of use
+          </Link>
+          {' | '}
+          <Link href="https://openai.com/policies/privacy-policy" target="_blank" rel="noreferrer">
+            Privacy policy
+          </Link>
+        </div>
       </div>
-    </div>
+    </LoginLayout>
   );
 };
 

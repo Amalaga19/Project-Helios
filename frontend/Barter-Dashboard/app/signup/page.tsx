@@ -1,8 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
+import { useAuth } from '../hooks/useAuth';
+import { useRouter } from 'next/navigation';
 
 const SignUpPage = () => {
+  const { register } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
@@ -13,12 +17,11 @@ const SignUpPage = () => {
   };
 
   const validatePassword = (password) => {
-    // Example password validation: at least 8 characters, 1 uppercase letter, 1 lowercase letter, and 1 number
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     return passwordRegex.test(password);
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     let emailError = "";
     let passwordError = "";
 
@@ -35,7 +38,13 @@ const SignUpPage = () => {
       return;
     }
 
-    // Handle successful validation (e.g., submit the form)
+    try {
+      await register(email, password);
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Registration failed:', error);
+      setErrors({ ...errors, form: 'Registration failed. Please try again.' });
+    }
   };
 
   return (
@@ -65,23 +74,10 @@ const SignUpPage = () => {
       </button>
       <p className="mb-4">
         Already have an account?{" "}
-        <a href="#" className="text-secondary">
+        <a href="/login" className="text-secondary">
           Log in
         </a>
       </p>
-      <div className="flex items-center w-full max-w-md mb-4">
-        <hr className="flex-grow border-gray-300" />
-        <span className="mx-2 text-gray-400">OR</span>
-        <hr className="flex-grow border-gray-300" />
-      </div>
-      <button className="w-full max-w-md px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary flex items-center justify-center">
-        <img src="/google-icon.svg" alt="Google" className="w-6 h-6 mr-2" />
-        Continue with Google
-      </button>
-      <button className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary flex items-center justify-center">
-        <img src="/microsoft-icon.svg" alt="Microsoft" className="w-6 h-6 mr-2" />
-        Continue with Microsoft Account
-      </button>
     </div>
   );
 };
