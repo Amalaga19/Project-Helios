@@ -1,21 +1,26 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from '@nextui-org/react';
 
 const businessCategories = [
-  { key: 'restaurant', label: 'Restaurant' },
-  { key: 'cafe', label: 'Cafe' },
-  { key: 'store', label: 'Store' },
-  { key: 'all', label: 'All Businesses' },
+  { key: 'catering', label: 'Catering' },
+  { key: 'commercial', label: 'Commercial' },
+  { key: 'production', label: 'Production' },
+  { key: 'service', label: 'Service' },
+  { key: 'office', label: 'Office' },
 ];
 
-export const BusinessCategoryFilter = () => {
-  const [selectedKeys, setSelectedKeys] = useState(new Set(['all']));
+export const BusinessCategoryFilter = ({ selectedCategories = {}, setSelectedCategories }) => {
+  // Initialize selectedKeys with all category keys
+  const [selectedKeys, setSelectedKeys] = useState(new Set(Object.keys(selectedCategories)));
 
-  const selectedValue = React.useMemo(
-    () => Array.from(selectedKeys).map(key => businessCategories.find(category => category.key === key)?.label).join(", "),
-    [selectedKeys]
-  );
+  useEffect(() => {
+    const updatedCategories = {};
+    selectedKeys.forEach(key => {
+      updatedCategories[key] = 1;
+    });
+    setSelectedCategories(updatedCategories);
+  }, [selectedKeys, setSelectedCategories]);
 
   return (
     <div className="flex-1 min-w-[250px]">

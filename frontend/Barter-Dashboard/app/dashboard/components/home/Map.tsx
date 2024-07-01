@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { TileLayer, CircleMarker, Circle, Popup, useMapEvents, MapContainer } from 'react-leaflet';
 import L, { LatLngExpression } from 'leaflet';
@@ -16,17 +16,10 @@ const DynamicMap = dynamic(
 
 const center: LatLngExpression = [40.4168, -3.7038]; // Madrid coordinates
 
-const MapComponent: React.FC = () => {
+const MapComponent = ({ selectedCategories = [] }) => {
   const [businesses, setBusinesses] = useState<any[]>([]);
   const [radius, setRadius] = useState<number>(2000); // 2km default
   const [mapCenter, setMapCenter] = useState<LatLngExpression>(center); // Center of the map
-  const [selectedCategories, setSelectedCategories] = useState({
-    catering: 1,
-    commercial: 1,
-    production: 1,
-    service: 1,
-    office: 1
-  });
 
   const handleMapClick = async (e: L.LeafletMouseEvent) => {
     const { lat, lng } = e.latlng;
@@ -37,14 +30,13 @@ const MapComponent: React.FC = () => {
   const transformData = (data) => {
     return data.places.map(place => {
       const categories = Object.keys(place.categories)
-        .filter(key => place.categories[key])
-        .join(',');
+        .filter(key => place.categories[key]); // Keeping categories as an array
 
       return {
         NAME: place.name,
         LATITUDE: place.latitude.toString(),
         LONGITUDE: place.longitude.toString(),
-        categories,
+        categories: categories,
         BARRIO: place.suburb || place.district || '',
         ADDRESS: `${place.street}, ${place.city}, ${place.postcode}`
       };
@@ -61,6 +53,10 @@ const MapComponent: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    fetchData(mapCenter[0], mapCenter[1]);
+  }, [selectedCategories, mapCenter]);
+
   // Use a wrapper component to handle map events
   const MapEvents = () => {
     useMapEvents({
@@ -68,6 +64,16 @@ const MapComponent: React.FC = () => {
     });
     return null;
   };
+
+  // Filter businesses by selected categories
+  const filteredBusinesses = useMemo(() => {
+    if (!Array.isArray(selectedCategories) || selectedCategories.length === 0) {
+      return businesses;
+    }
+    return businesses.filter(business =>
+      business.categories.some(category => selectedCategories.includes(category))
+    );
+  }, [businesses, selectedCategories]);
 
   return (
     <div className="relative" style={{ height: '500px', width: '100%' }}>
@@ -86,10 +92,10 @@ const MapComponent: React.FC = () => {
       </div>
       <DynamicMap center={mapCenter} zoom={13} style={{ height: '100%', width: '100%' }}>
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
-        <MapEvents /> {/* Add MapEvents component here */}
+        <MapEvents />
         <Circle
           center={mapCenter}
           radius={radius}
@@ -98,14 +104,14 @@ const MapComponent: React.FC = () => {
           fillOpacity={0.5}
         />
 
-        {businesses.map((business, idx) => {
+        {filteredBusinesses.map((business, idx) => {
           const position: LatLngExpression = [parseFloat(business.LATITUDE), parseFloat(business.LONGITUDE)];
-          const categories = business.categories?.split(',').map(category => category.trim());
-          const color = getColorForCategory(categories);
+          const color = getColorForCategory(business.categories);
+          console.log(`Business: ${business.NAME}, Categories: ${business.categories.join(', ')}, Color: ${color}`);
 
           return (
             <CircleMarker
-              key={idx}
+              key={`${business.NAME}-${idx}`} // Ensure unique key
               center={position}
               radius={3} // Adjust the size as needed
               color={color}
@@ -115,7 +121,7 @@ const MapComponent: React.FC = () => {
               <Popup>
                 <div>
                   <h3>{business.NAME}</h3>
-                  <p>Categories: {categories?.join(', ')}</p>
+                  <p>Categories: {business.categories?.join(', ')}</p>
                   <p>Barrio: {business.BARRIO}</p>
                   <p>Address: {business.ADDRESS}</p>
                   <p>Longitude: {business.LONGITUDE}</p>

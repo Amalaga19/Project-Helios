@@ -1,12 +1,13 @@
 // utils.js
 export const categoryColors = {
-  catering: 'Coral',
-  commercial: 'MediumAquamarine',
-  production: 'RoyalBlue',
-  office: 'DeepPink',
-  service: 'indigo',
-  multiple: 'orange', // For businesses with multiple categories
+  catering: 'red',
+  commercial: 'blue',
+  production: 'green',
+  office: 'purple',
+  service: 'yellow',
+  multiple: 'orange',
 };
+
 
 export const getColorForCategory = (categories) => {
   if (categories.length > 1) {
