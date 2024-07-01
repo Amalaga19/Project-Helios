@@ -1,8 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
+import { useAuth } from '../hooks/useAuth';
+import { useRouter } from 'next/navigation';
 
 const UserLogin = () => {
+  const { login } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
@@ -13,12 +17,11 @@ const UserLogin = () => {
   };
 
   const validatePassword = (password) => {
-    // Example password validation: at least 8 characters, 1 uppercase letter, 1 lowercase letter, and 1 number
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     return passwordRegex.test(password);
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     let emailError = "";
     let passwordError = "";
 
@@ -35,7 +38,13 @@ const UserLogin = () => {
       return;
     }
 
-    // Handle successful validation (e.g., submit the form)
+    try {
+      await login(email, password);
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Login failed:', error);
+      setErrors({ ...errors, form: 'Login failed. Please check your credentials and try again.' });
+    }
   };
 
   return (
@@ -69,19 +78,6 @@ const UserLogin = () => {
           Sign up
         </a>
       </p>
-      <div className="flex items-center w-full max-w-md mb-4">
-        <hr className="flex-grow border-gray-300" />
-        <span className="mx-2 text-gray-400">OR</span>
-        <hr className="flex-grow border-gray-300" />
-      </div>
-      <button className="w-full max-w-md px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary flex items-center justify-center">
-        <img src="/google-icon.svg" alt="Google" className="w-6 h-6 mr-2" />
-        Continue with Google
-      </button>
-      <button className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary flex items-center justify-center">
-        <img src="/microsoft-icon.svg" alt="Microsoft" className="w-6 h-6 mr-2" />
-        Continue with Microsoft Account
-      </button>
     </div>
   );
 };
