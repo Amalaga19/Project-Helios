@@ -1,6 +1,5 @@
 Flask
 python-dotenv
-Requests
 requests
 numpy
 argon2-cffi
@@ -10,7 +9,6 @@ seaborn
 flask_sqlalchemy
 Flask_CORS
 SQLAlchemy
-pyodbc
 fastapi
 uvicorn[standard]
 pydantic
