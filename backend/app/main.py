@@ -14,7 +14,10 @@ import datetime
 import logging
 
 radius_meters = 2000
-results_number = 500
+
+ph = PasswordHasher()
+
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -58,13 +61,22 @@ def hash_password(password): #Hashes the password so that it is stored securely 
     ph = PasswordHasher()
     return ph.hash(password)
 
-def check_password(hashed_password, password): #checks the password against the hashed password in the database
-    ph = PasswordHasher()
+def check_password(username, password): #This function checks if the password is correct for the user by hashing it and comparing it to the stored hash
     try:
-        ph.verify(hashed_password, password)
-        return True
-    except argon2.exceptions.VerifyMismatchError:
+        user = Users.query.filter_by(USERNAME=username).first()
+        if user is None:
+            return False
+        password_hash = user.PASSWORD
+        # Verify the password
+        try:
+            ph.verify(password_hash, password)
+            return True
+        except argon2.exceptions.VerifyMismatchError:
+            return False
+    except Exception as e:
+        print(f"Error checking password for user {username}: {e}")
         return False
+
 
 def get_solar_data_average(lon, lat):
     radiation_total = 0
@@ -247,6 +259,14 @@ def login(): #This route is used to log in the user
 def logout():
     session.clear()
     return jsonify({"message": "Logged out."}), 200
+
+@app.route('/check-auth', methods=['GET'])
+def check_auth():
+    if 'username' in session:
+        return jsonify({"userId": session['username']}), 200
+    else:
+        return jsonify({"error": "Not authenticated"}), 401
+
 
 if __name__ == "__main__":
     app.run(debug=True)

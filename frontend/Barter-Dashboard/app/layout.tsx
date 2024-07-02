@@ -19,6 +19,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     LayoutComponent = SimpleLayout;
   } else if (pathname.startsWith("/userlogin")) {
     LayoutComponent = SimpleLayout;
+  } else if (pathname.startsWith("/dashboard")) {
+    LayoutComponent = SimpleLayout;
   }else {
     LayoutComponent = MainLayout;
   }
