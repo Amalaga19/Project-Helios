@@ -43,8 +43,3 @@ export const logoutUser = async () => {
   const response = await api.get('/logout');
   return response.data;
 };
-
-export const checkAuth = async () => {
-  const response = await api.get('/check-auth');
-  return response.data;
-};

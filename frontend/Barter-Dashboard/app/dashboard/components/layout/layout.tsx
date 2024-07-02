@@ -1,3 +1,6 @@
+// app/dashboard/components/layout/layout.tsx
+"use client"; // Add this directive at the top
+
 import React from "react";
 import { useLockedBody } from "../hooks/useBodyLock";
 import { SidebarWrapper } from "../sidebar/sidebar";
@@ -22,12 +25,12 @@ export const Layout = ({ children }: Props) => {
         setCollapsed: handleToggleSidebar,
       }}
     >
-      <section className="flex h-screen">
+      <div className="flex h-screen">
         <SidebarWrapper />
         <main className="flex-1 overflow-y-auto p-4">
           {children}
         </main>
-      </section>
+      </div>
     </SidebarContext.Provider>
   );
 };

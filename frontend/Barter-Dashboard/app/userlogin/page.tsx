@@ -39,7 +39,7 @@ const UserLogin = () => {
     }
 
     try {
-      const response = await login(username, password);
+      await login(username, password);
       localStorage.setItem('loggedInUser', username);
       router.push('/dashboard');
     } catch (error) {

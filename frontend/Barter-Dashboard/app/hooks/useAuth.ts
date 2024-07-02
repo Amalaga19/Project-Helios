@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { checkAuth, loginUser, logoutUser } from '@/utils/api';
 
 const apiBaseURL = 'http://localhost:5000'; // Ensure this matches your backend URL
 const axiosInstance = axios.create({
@@ -17,43 +16,19 @@ interface AuthState {
 export const useAuth = () => {
   const [authState, setAuthState] = useState<AuthState>({
     userId: Cookies.get('userId'),
-    isAuthenticated: false,
+    isAuthenticated: !!Cookies.get('userId'),
   });
-
-  useEffect(() => {
-    const checkAuthentication = async () => {
-      try {
-        const data = await checkAuth();
-        if (data.userId) {
-          setAuthState({
-            userId: data.userId,
-            isAuthenticated: true,
-          });
-        } else {
-          setAuthState({
-            userId: undefined,
-            isAuthenticated: false,
-          });
-        }
-      } catch (error) {
-        setAuthState({
-          userId: undefined,
-          isAuthenticated: false,
-        });
-      }
-    };
-
-    checkAuthentication();
-  }, []);
 
   const login = async (username: string, password: string) => {
     try {
-      const response = await loginUser(username, password);
-      Cookies.set('userId', response.userId);
+      const response = await axiosInstance.post('/login', { username, password });
+      const userId = response.data.username;
+      Cookies.set('userId', userId);
       setAuthState({
-        userId: response.userId,
+        userId,
         isAuthenticated: true,
       });
+      return response.data;
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
@@ -62,7 +37,7 @@ export const useAuth = () => {
 
   const logout = async () => {
     try {
-      await logoutUser();
+      await axiosInstance.post('/logout'); // Ensure you have a logout endpoint
       Cookies.remove('userId');
       setAuthState({
         userId: undefined,

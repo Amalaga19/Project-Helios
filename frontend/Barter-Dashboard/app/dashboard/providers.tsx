@@ -3,7 +3,7 @@ import * as React from "react";
 import { NextUIProvider } from "@nextui-org/system";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProviderProps } from "next-themes/dist/types";
-import { Layout } from "../dashboard/components/layout/layout";
+import DashboardLayout  from "./layout";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -14,9 +14,9 @@ export function Providers({ children, themeProps }: ProvidersProps) {
   return (
     <NextUIProvider>
       <NextThemesProvider defaultTheme="system" attribute="class" {...themeProps}>
-        <Layout>
+        <DashboardLayout>
           {children}
-        </Layout>
+        </DashboardLayout>
       </NextThemesProvider>
     </NextUIProvider>
   );
