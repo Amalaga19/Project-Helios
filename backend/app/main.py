@@ -11,6 +11,7 @@ from sqlalchemy.schema import Identity
 from data_model import db, Users, Requests, Places
 from sqlalchemy import text
 import datetime
+import logging
 
 radius_meters = 2000
 
@@ -35,6 +36,8 @@ with app.app_context():
     db.create_all()
     print("Tables created successfully.")
 
+# Enable debug logging
+app.logger.setLevel(logging.DEBUG)
 
 def add_cors_headers(response):
     origin = request.headers.get('Origin')
@@ -46,7 +49,6 @@ def add_cors_headers(response):
     return response
 
 app.after_request(add_cors_headers)
-
 
 long_query = f"""
         SELECT PLACE_ID, NAME, LATITUDE, LONGITUDE, COUNTRY, STATE, CITY, DISTRICT, NEIGHBOURHOOD, SUBURB, STREET, POSTCODE, CATERING, COMMERCIAL, OFFICE, PRODUCTION, SERVICE
@@ -103,21 +105,21 @@ def get_solar_data_average(lon, lat):
                         radiation_total += radiation_value
                         count += 1
                     except ValueError as e:
-                        # Skip entries with invalid data and print an error message
-                        print(f"Skipping entry due to error: {e}, entry content: {entry}")
+                        # Skip entries with invalid data and log an error message
+                        app.logger.error(f"Skipping entry due to error: {e}, entry content: {entry}")
             
-            if count==0:
+            if count == 0:
                 return 0
             
             average = radiation_total / count
 
             return average
         else:
-            print("Error: 'outputs' or 'monthly' key not found in the response.")
+            app.logger.error("Error: 'outputs' or 'monthly' key not found in the response.")
             return None
     else:
-        print("Error:", response.status_code)
-        print("Response Content:", response.content.decode('utf-8'))
+        app.logger.error(f"Error: {response.status_code}")
+        app.logger.error(f"Response Content: {response.content.decode('utf-8')}")
         return None
 
 def get_query(catering, commercial, production, service, office):
@@ -153,14 +155,18 @@ def home():
     #To be removed later
     #Query for all the elements of the places table
     query = text(long_query)
-    places = db.session.execute(query)
-    places_list = []
-    for place in places:
-        place_dict = Places.place_dict(place) #This is a method in the Places class that converts the row to a dictionary
-        places_list.append(Places.place_dict(place)) 
-        if len(places_list) > 20:
-            break
-    return jsonify(places=places_list)
+    try:
+        places = db.session.execute(query)
+        places_list = []
+        for place in places:
+            place_dict = Places.place_dict(place) #This is a method in the Places class that converts the row to a dictionary
+            places_list.append(place_dict) 
+            if len(places_list) > 20:
+                break
+        return jsonify(places=places_list)
+    except Exception as e:
+        app.logger.error(f"Error fetching places: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/get_places', methods=['GET'])
 def get_places():
@@ -179,20 +185,22 @@ def get_places():
     office = request.args.get('office', '0').lower() == '1'
 
     # For debugging
-    print(f"Latitude: {lat}, Longitude: {lon}, Radius: {radius_meters}")
-    print(f"Category selections - Catering: {catering}, Commercial: {commercial}, Production: {production}, Service: {service}, Office: {office}")
-    query = text(get_query(catering, commercial, production, service, office))
-    results = db.session.execute(query, {'point': f'POINT({lon} {lat})', 'radius_meters': radius_meters})    #record_request(lat, lon, radius_meters, catering, commercial, production, service, office) #Disabled until registering users and login are properly implemented in the frontend
-    places_list = []
-    for place in results:
-        place_dict = Places.place_dict(place) #This is a method in the Places class that converts the row to a dictionary
-        if place_dict not in places_list:
-            places_list.append(place_dict)
-        else:
-            continue
-    print(f"Found places: {places_list}")
-    return jsonify(places=places_list)
+    app.logger.debug(f"Latitude: {lat}, Longitude: {lon}, Radius: {radius_meters}")
+    app.logger.debug(f"Category selections - Catering: {catering}, Commercial: {commercial}, Production: {production}, Service: {service}, Office: {office}")
 
+    query = text(get_query(catering, commercial, production, service, office))
+    try:
+        results = db.session.execute(query, {'point': f'POINT({lon} {lat})', 'radius_meters': radius_meters})
+        places_list = []
+        for place in results:
+            place_dict = Places.place_dict(place) #This is a method in the Places class that converts the row to a dictionary
+            if place_dict not in places_list:
+                places_list.append(place_dict)
+        app.logger.debug(f"Found places: {places_list}")
+        return jsonify(places=places_list)
+    except Exception as e:
+        app.logger.error(f"Error fetching places: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/get_solar', methods=['GET'])
 def get_solar():

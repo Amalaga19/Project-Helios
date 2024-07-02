@@ -17,7 +17,7 @@ export default function TeamPage() {
     },
     {
       name: "Leana Barbion",
-      position: "Project Manager & Product Designer",
+      position: "Database Engineer & Product Designer",
       description: "Meet Leana Barbion, Project Manager & Product Designer for Group 4 @MCSBT 2024.",
       img: "/images/leanalinkedin.jpg",
       github: "https://github.com/leanabarbion",
@@ -25,7 +25,7 @@ export default function TeamPage() {
     },
     {
       name: "Sandro Alvines",
-      position: "Backend Engineer & Sales Manager",
+      position: "Project & Sales Manager",
       description: "Meet Sandro Alvines, Backend Engineer & Sales Manager for Group 4 @MCSBT 2024.",
       img: "/images/sandrolinkedin.jpg",
       github: "https://github.com/sandroalv",
