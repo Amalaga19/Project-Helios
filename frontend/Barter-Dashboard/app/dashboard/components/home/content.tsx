@@ -1,12 +1,13 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import TableComponent from "./table"; // Import the new TableComponent
 import { FilterBar } from "../filters/FilterBar";
 import { saveAs } from 'file-saver'; // Import file-saver
 import { json2csv } from 'json-2-csv'; // Import json2csv
 import ProtectedRoute from '@/components/ProtectedRoute'; // Import ProtectedRoute
+import { SidebarWrapper } from "../sidebar/sidebar"; // Import SidebarWrapper
 
 const MapComponent = dynamic(() => import('./Map'), {
   suspense: true,
@@ -26,14 +27,14 @@ const MapSection = ({ selectedCategories, setBusinesses }: { selectedCategories:
 );
 
 export const Content: React.FC = () => {
-  const [selectedCategories, setSelectedCategories] = useState({
-    catering: 1,
-    commercial: 1,
-    production: 1,
-    service: 1,
-    office: 1,
-  });
+  const [selectedCategories, setSelectedCategories] = useState({});
   const [businesses, setBusinesses] = useState([]);
+
+  useEffect(() => {
+    if (Object.keys(selectedCategories).length === 0) {
+      setBusinesses([]); // Clear businesses if no categories are selected
+    }
+  }, [selectedCategories]);
 
   const generateCSV = async () => {
     try {
@@ -47,22 +48,25 @@ export const Content: React.FC = () => {
 
   return (
     <ProtectedRoute>
-      <div className="h-full lg:px-6">
-        <FilterBar 
-          selectedCategories={selectedCategories}
-          setSelectedCategories={setSelectedCategories}
-        />
-        <div className="flex justify-center gap-4 xl:gap-6 pt-3 px-4 lg:px-0 flex-wrap xl:flex-nowrap sm:pt-10 max-w-[90rem] mx-auto w-full">
-          <MapSection selectedCategories={selectedCategories} setBusinesses={setBusinesses} />
-        </div>
-        <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0 max-w-[90rem] mx-auto gap-3">
-          <div className="flex flex-wrap justify-between">
-            <h3 className="text-center text-2xl font-bold">Business' Details</h3>
-            <button onClick={generateCSV} className="cursor-pointer hover:underline focus:outline-none text-primary">
-              Download CSV
-            </button>
+      <div className="h-full lg:px-6 flex">
+        <SidebarWrapper /> {/* Include SidebarWrapper here */}
+        <div className="flex-grow px-4"> {/* Add padding to the right of the sidebar */}
+          <FilterBar 
+            selectedCategories={selectedCategories}
+            setSelectedCategories={setSelectedCategories}
+          />
+          <div className="flex justify-center gap-4 xl:gap-6 pt-3 px-4 lg:px-0 flex-wrap xl:flex-nowrap sm:pt-10 max-w-[90rem] mx-auto w-full">
+            <MapSection selectedCategories={selectedCategories} setBusinesses={setBusinesses} />
           </div>
-          <TableComponent businesses={businesses} /> {/* Pass businesses as a prop */}
+          <div className="flex flex-col justify-center w-full py-5 px-4 lg:px-0 max-w-[90rem] mx-auto gap-3">
+            <div className="flex flex-wrap justify-between">
+              <h3 className="text-center text-2xl font-bold">Business' Details</h3>
+              <button onClick={generateCSV} className="cursor-pointer hover:underline focus:outline-none text-primary">
+                Download CSV
+              </button>
+            </div>
+            <TableComponent businesses={businesses} /> {/* Pass businesses as a prop */}
+          </div>
         </div>
       </div>
     </ProtectedRoute>

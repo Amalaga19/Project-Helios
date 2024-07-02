@@ -3,13 +3,15 @@
 import React, { useState } from "react";
 import { useAuth } from '../hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const SignUpPage = () => {
   const { register } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({ email: "", password: "", form: "" });
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -58,14 +60,24 @@ const SignUpPage = () => {
         className="w-full max-w-md px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary"
       />
       {errors.email && <p className="text-red-500 text-sm mb-4">{errors.email}</p>}
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full max-w-md px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary"
-      />
+      <div className="relative w-full max-w-md">
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </button>
+      </div>
       {errors.password && <p className="text-red-500 text-sm mb-4">{errors.password}</p>}
+      {errors.form && <p className="text-red-500 text-sm mb-4">{errors.form}</p>}
       <button
         onClick={handleContinue}
         className="w-full max-w-md px-4 py-2 mb-4 text-white bg-secondary rounded-md focus:outline-none focus:ring-2 focus:ring-secondary"
@@ -74,7 +86,7 @@ const SignUpPage = () => {
       </button>
       <p className="mb-4">
         Already have an account?{" "}
-        <a href="/login" className="text-secondary">
+        <a href="/userlogin" className="text-secondary">
           Log in
         </a>
       </p>

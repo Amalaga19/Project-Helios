@@ -1,8 +1,6 @@
-// app/dashboard/components/layout/layout.tsx
-"use client"; // Add this directive at the top
+"use client";
 
 import React from "react";
-import { useLockedBody } from "../hooks/useBodyLock";
 import { SidebarWrapper } from "../sidebar/sidebar";
 import { SidebarContext } from "./layout-context";
 
@@ -12,10 +10,9 @@ interface Props {
 
 export const Layout = ({ children }: Props) => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const [_, setLocked] = useLockedBody(false);
+
   const handleToggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
-    setLocked(!sidebarOpen);
   };
 
   return (
@@ -23,14 +20,13 @@ export const Layout = ({ children }: Props) => {
       value={{
         collapsed: sidebarOpen,
         setCollapsed: handleToggleSidebar,
-      }}
-    >
-      <div className="flex h-screen">
-        <SidebarWrapper />
-        <main className="flex-1 overflow-y-auto p-4">
+      }}>
+      <section className='flex'>
+        <SidebarWrapper /> {/* Ensure this is rendered only once */}
+        <div className="content flex-grow">
           {children}
-        </main>
-      </div>
+        </div>
+      </section>
     </SidebarContext.Provider>
   );
 };

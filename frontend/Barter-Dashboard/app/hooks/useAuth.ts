@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 const apiBaseURL = 'http://localhost:5000'; // Ensure this matches your backend URL
 const axiosInstance = axios.create({
@@ -18,6 +19,8 @@ export const useAuth = () => {
     userId: Cookies.get('userId'),
     isAuthenticated: !!Cookies.get('userId'),
   });
+
+  const router = useRouter(); // Use the useRouter hook for navigation
 
   const login = async (username: string, password: string) => {
     try {
@@ -37,12 +40,14 @@ export const useAuth = () => {
 
   const logout = async () => {
     try {
-      await axiosInstance.post('/logout'); // Ensure you have a logout endpoint
+      const response = await axiosInstance.get('/logout'); // Ensure you have a logout endpoint
+      console.log('Logout response:', response); // Log the response for debugging
       Cookies.remove('userId');
       setAuthState({
         userId: undefined,
         isAuthenticated: false,
       });
+      router.push('/'); // Redirect to the home page after logout
     } catch (error) {
       console.error('Logout failed:', error);
     }

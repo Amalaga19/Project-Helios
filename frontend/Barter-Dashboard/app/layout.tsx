@@ -7,6 +7,7 @@ import { fontSans } from "@/config/fonts";
 import MainLayout from "./layouts/MainLayout";
 import SimpleLayout from "./layouts/SimpleLayout";
 import LoginLayout from "./login/layout";
+import DashboardLayout from "./dashboard/layout"; // Ensure this import path is correct
 import { usePathname } from "next/navigation";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -20,8 +21,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   } else if (pathname.startsWith("/userlogin")) {
     LayoutComponent = SimpleLayout;
   } else if (pathname.startsWith("/dashboard")) {
-    LayoutComponent = SimpleLayout;
-  }else {
+    LayoutComponent = DashboardLayout; // Use DashboardLayout for dashboard paths
+  } else {
     LayoutComponent = MainLayout;
   }
 

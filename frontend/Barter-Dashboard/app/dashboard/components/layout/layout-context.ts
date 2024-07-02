@@ -1,16 +1,17 @@
-// app/dashboard/components/layout/layout-context.ts
 "use client";
 
-import { createContext, useContext } from 'react';
+import { createContext, useContext } from "react";
 
-interface SidebarContextProps {
+interface SidebarContext {
   collapsed: boolean;
   setCollapsed: () => void;
 }
 
-export const SidebarContext = createContext<SidebarContextProps>({
+export const SidebarContext = createContext<SidebarContext>({
   collapsed: false,
   setCollapsed: () => {},
 });
 
-export const useSidebarContext = () => useContext(SidebarContext);
+export const useSidebarContext = () => {
+  return useContext(SidebarContext);
+};

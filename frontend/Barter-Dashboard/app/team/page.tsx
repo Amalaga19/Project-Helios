@@ -1,9 +1,9 @@
 'use client';
 
 import React from "react";
-import { Card, CardHeader, Image, Link } from "@nextui-org/react";
-import TeamLayout from "./layout";
+import { Card, Image, Link } from "@nextui-org/react";
 import { title } from "@/components/primitives";
+import MainLayout from "../layouts/MainLayout";
 
 export default function TeamPage() {
   const teamMembers = [
@@ -42,14 +42,16 @@ export default function TeamPage() {
   ];
 
   return (
-    <TeamLayout>
-      <h1 className={title({ color: "violet", class: "lg:text-7xl md:text-6xl mt-2 block" })} style={{ marginTop: 0, paddingTop: 0 }}>
-        The Team
-      </h1>
-      <p className="text-xl mb-8 max-w-screen-md mx-auto">
-        We're a cross-disciplinary team that loves to create great experiences and make meaningful connections between listeners and creators. Learn more about our design community below and browse the latest opportunities on our team.
-      </p>
-      <section id="who-we-are" className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+    <section className="flex flex-col items-center justify-center gap-4 py-12 px-4 md:py-16 md:px-8">
+      <div className="w-full max-w-screen-md text-center" style={{ overflow: 'visible' }}>
+        <h1 className={title({ color: "violet", class: "lg:text-7xl md:text-6xl mt-2 block" })} style={{ marginTop: 0, paddingTop: 0 }}>
+          The Team
+        </h1>
+        <p className="text-xl mb-8 max-w-screen-md mx-auto mt-4">
+          We're a cross-disciplinary team that loves to create great experiences and make meaningful connections between listeners and creators. Learn more about our design community below and browse the latest opportunities on our team.
+        </p>
+      </div>
+      <section id="who-we-are" className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
         {teamMembers.map((member, index) => (
           <Card key={index} className="max-w-sm bg-black text-white m-4">
             <div className="flex flex-col items-center p-3">
@@ -69,6 +71,8 @@ export default function TeamPage() {
           </Card>
         ))}
       </section>
-    </TeamLayout>
+    </section>
   );
 }
+
+TeamPage.getLayout = (page: React.ReactNode) => <MainLayout>{page}</MainLayout>;

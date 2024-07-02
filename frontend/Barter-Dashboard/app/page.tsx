@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { title, subtitle } from "../components/primitives";
 import { Card, CardHeader, Image } from "@nextui-org/react";
+import MainLayout from "./layouts/MainLayout";
 
 export default function Home() {
   const [activeCard, setActiveCard] = useState<number | null>(null);

@@ -11,8 +11,8 @@ const businessCategories = [
 ];
 
 export const BusinessCategoryFilter = ({ selectedCategories = {}, setSelectedCategories }) => {
-  // Initialize selectedKeys with all category keys
-  const [selectedKeys, setSelectedKeys] = useState(new Set(Object.keys(selectedCategories)));
+  // Initialize selectedKeys with an empty set
+  const [selectedKeys, setSelectedKeys] = useState(new Set());
 
   useEffect(() => {
     const updatedCategories = {};
