@@ -13,12 +13,12 @@ const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({ email: "", password: "", form: "" });
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const validatePassword = (password) => {
+  const validatePassword = (password: string) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     return passwordRegex.test(password);
   };
@@ -36,7 +36,7 @@ const SignUpPage = () => {
     }
 
     if (emailError || passwordError) {
-      setErrors({ email: emailError, password: passwordError });
+      setErrors({ email: emailError, password: passwordError, form: "" });
       return;
     }
 
@@ -45,7 +45,7 @@ const SignUpPage = () => {
       router.push('/dashboard');
     } catch (error) {
       console.error('Registration failed:', error);
-      setErrors({ ...errors, form: 'Registration failed. Please try again.' });
+      setErrors({ email: "", password: "", form: 'Registration failed. Please try again.' });
     }
   };
 

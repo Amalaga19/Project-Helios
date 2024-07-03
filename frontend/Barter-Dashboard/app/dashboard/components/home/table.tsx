@@ -11,7 +11,20 @@ import {
 } from "@nextui-org/react";
 import { RenderCell } from './render-cell';
 
-const TableComponent = ({ businesses = [] }) => { // Set a default value for businesses
+interface Business {
+  NAME: string;
+  categories: string[];
+  BARRIO: string;
+  ADDRESS: string;
+  LONGITUDE: string;
+  LATITUDE: string;
+}
+
+interface TableComponentProps {
+  businesses: Business[];
+}
+
+const TableComponent: React.FC<TableComponentProps> = ({ businesses = [] }) => { // Set a default value for businesses
   const [page, setPage] = useState(1);
   const rowsPerPage = 10; // Define the number of rows per page
 
@@ -33,11 +46,11 @@ const TableComponent = ({ businesses = [] }) => { // Set a default value for bus
           <TableColumn key="LATITUDE">Latitude</TableColumn>
         </TableHeader>
         <TableBody items={currentBusinesses}>
-          {(item) => (
+          {(item: Business) => (
             <TableRow key={item.NAME}>
               {(columnKey) => (
                 <TableCell>
-                  <RenderCell business={item} columnKey={columnKey} />
+                  <RenderCell business={item} columnKey={columnKey as keyof Business} />
                 </TableCell>
               )}
             </TableRow>

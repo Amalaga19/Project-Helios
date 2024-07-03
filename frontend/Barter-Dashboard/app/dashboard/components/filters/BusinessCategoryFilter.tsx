@@ -10,17 +10,31 @@ const businessCategories = [
   { key: 'office', label: 'Office' },
 ];
 
-export const BusinessCategoryFilter = ({ selectedCategories = {}, setSelectedCategories }) => {
-  // Initialize selectedKeys with an empty set
-  const [selectedKeys, setSelectedKeys] = useState(new Set());
+interface BusinessCategoryFilterProps {
+  selectedCategories: { [key: string]: number };
+  setSelectedCategories: (categories: { [key: string]: number }) => void;
+}
+
+export const BusinessCategoryFilter: React.FC<BusinessCategoryFilterProps> = ({ selectedCategories = {}, setSelectedCategories }) => {
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const updatedCategories = {};
+    const updatedCategories: { [key: string]: number } = {};
     selectedKeys.forEach(key => {
       updatedCategories[key] = 1;
     });
     setSelectedCategories(updatedCategories);
   }, [selectedKeys, setSelectedCategories]);
+
+  const handleSelectionChange = (keys: any) => {
+    if (Array.isArray(keys)) {
+      setSelectedKeys(new Set(keys as string[]));
+    } else if (typeof keys === 'string') {
+      setSelectedKeys(new Set([keys]));
+    } else if (keys && typeof keys === 'object' && keys.currentKey) {
+      setSelectedKeys(new Set([keys.currentKey]));
+    }
+  };
 
   return (
     <div className="flex-1 min-w-[250px]">
@@ -37,8 +51,8 @@ export const BusinessCategoryFilter = ({ selectedCategories = {}, setSelectedCat
           closeOnSelect={false}
           disallowEmptySelection
           selectionMode="multiple"
-          selectedKeys={selectedKeys}
-          onSelectionChange={setSelectedKeys}
+          selectedKeys={Array.from(selectedKeys)}
+          onSelectionChange={handleSelectionChange}
         >
           {businessCategories.map(category => (
             <DropdownItem key={category.key}>

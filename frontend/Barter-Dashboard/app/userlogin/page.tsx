@@ -13,16 +13,16 @@ const UserLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({ username: "", password: "", form: "" });
 
-  const validateUsername = (username) => {
+  const validateUsername = (username: string) => {
     return username.trim() !== "";
   };
 
-  const validatePassword = (password) => {
+  const validatePassword = (password: string) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     return passwordRegex.test(password);
   };
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     let usernameError = "";
     let passwordError = "";
@@ -36,7 +36,7 @@ const UserLogin = () => {
     }
 
     if (usernameError || passwordError) {
-      setErrors({ username: usernameError, password: passwordError });
+      setErrors({ username: usernameError, password: passwordError, form: "" });
       return;
     }
 
@@ -46,7 +46,7 @@ const UserLogin = () => {
       router.push('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
-      setErrors({ ...errors, form: 'Login failed. Please check your credentials and try again.' });
+      setErrors({ username: "", password: "", form: 'Login failed. Please check your credentials and try again.' });
     }
   };
 
@@ -95,4 +95,4 @@ const UserLogin = () => {
   );
 };
 
-export default UserLogin;
+export default UserLogin; 

@@ -53,6 +53,22 @@ export const useAuth = () => {
     }
   };
 
+  const register = async (email: string, password: string) => {
+    try {
+      const response = await axiosInstance.post('/register', { email, password });
+      const userId = response.data.username;
+      Cookies.set('userId', userId);
+      setAuthState({
+        userId,
+        isAuthenticated: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw error;
+    }
+  };
+
   const authenticatedAxiosPost = async (url: string, data: any) => {
     try {
       const response = await axiosInstance.post(url, data);
@@ -89,6 +105,7 @@ export const useAuth = () => {
     auth: authState,
     login,
     logout,
+    register, // Include the register method
     authenticatedAxiosPost,
     authenticatedAxiosGet,
   };

@@ -7,6 +7,7 @@ import L, { LatLngExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getColorForCategory } from './utils';
 import { getPlaces, getSolarData } from '@/utils/api';
+import { Modal, Button } from 'react-bootstrap'; // Import React-Bootstrap components
 
 // Dynamically import react-leaflet to prevent SSR issues
 const DynamicMap = dynamic(
@@ -14,20 +15,47 @@ const DynamicMap = dynamic(
   { ssr: false }
 );
 
-const center: LatLngExpression = [40.4168, -3.7038]; // Madrid coordinates
+const center: [number, number] = [40.4168, -3.7038]; // Madrid coordinates
 
-const MapComponent = ({ selectedCategories = [], setBusinesses }) => {
+interface MapComponentProps {
+  selectedCategories: string[];
+  setBusinesses: (businesses: any[]) => void;
+}
+
+interface Place {
+  name: string;
+  latitude: number;
+  longitude: number;
+  categories: { [key: string]: boolean };
+  suburb?: string;
+  district?: string;
+  street: string;
+  city: string;
+  postcode: string;
+}
+
+interface PlacesData {
+  places: Place[];
+}
+
+const MapComponent: React.FC<MapComponentProps> = ({ selectedCategories = [], setBusinesses }) => {
   const [localBusinesses, setLocalBusinesses] = useState<any[]>([]);
   const [radius, setRadius] = useState<number>(2000); // 2km default
-  const [mapCenter, setMapCenter] = useState<LatLngExpression>(center); // Center of the map
+  const [mapCenter, setMapCenter] = useState<[number, number]>(center); // Center of the map
+  const [showModal, setShowModal] = useState(false); // State for modal visibility
 
   const handleMapClick = async (e: L.LeafletMouseEvent) => {
+    if (selectedCategories.length === 0) {
+      setShowModal(true); // Show modal if no categories are selected
+      return;
+    }
+
     const { lat, lng } = e.latlng;
     setMapCenter([lat, lng]);
     fetchData(Number(lat.toFixed(6)), Number(lng.toFixed(6)));
   };
 
-  const transformData = (data) => {
+  const transformData = (data: PlacesData) => {
     return data.places.map(place => {
       const categories = Object.keys(place.categories)
         .filter(key => place.categories[key]); // Keeping categories as an array
@@ -45,7 +73,19 @@ const MapComponent = ({ selectedCategories = [], setBusinesses }) => {
 
   const fetchData = async (lat: number, lon: number) => {
     try {
-      const data = await getPlaces(lat, lon, radius, selectedCategories);
+      const categoryObject = {
+        catering: false,
+        commercial: false,
+        production: false,
+        service: false,
+        office: false,
+        ...selectedCategories.reduce((obj, category) => {
+          obj[category] = true;
+          return obj;
+        }, {} as { [key: string]: boolean })
+      };
+
+      const data = await getPlaces(lat, lon, radius, categoryObject);
       const transformedData = transformData(data);
       setLocalBusinesses(transformedData);
       setBusinesses(transformedData); // Update the parent component's state
@@ -72,7 +112,7 @@ const MapComponent = ({ selectedCategories = [], setBusinesses }) => {
       return localBusinesses;
     }
     return localBusinesses.filter(business =>
-      business.categories.some(category => selectedCategories.includes(category))
+      business.categories.some((category: string) => selectedCategories.includes(category))
     );
   }, [localBusinesses, selectedCategories]);
 
@@ -130,12 +170,36 @@ const MapComponent = ({ selectedCategories = [], setBusinesses }) => {
           );
         })}
       </DynamicMap>
+
+      {/* Modal for the message */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Select Business Category</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Please select a business category to proceed.</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
-const PopupContent = ({ business }) => {
-  const [solarData, setSolarData] = useState(null);
+interface PopupContentProps {
+  business: {
+    NAME: string;
+    LATITUDE: string;
+    LONGITUDE: string;
+    categories: string[];
+    BARRIO: string;
+    ADDRESS: string;
+  };
+}
+
+const PopupContent: React.FC<PopupContentProps> = ({ business }) => {
+  const [solarData, setSolarData] = useState<any>(null);
 
   useEffect(() => {
     const fetchSolarData = async () => {

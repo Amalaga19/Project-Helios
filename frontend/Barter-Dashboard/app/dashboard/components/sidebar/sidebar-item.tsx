@@ -18,6 +18,7 @@ export const SidebarItem = ({ icon, title, isActive, href = "" }: Props) => {
       setCollapsed();
     }
   };
+
   return (
     <NextLink
       href={href}

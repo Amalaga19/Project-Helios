@@ -8,11 +8,12 @@ import {
 import React from "react";
 import { DarkModeSwitch } from "./darkmodeswitch";
 import { useAuth } from '@/app/hooks/useAuth';
+import barterLogo from '../icons/sidebar/barter_logo.png'; // Make sure this path is correct
 
 export const SidebarUserDropdown = () => {
   const { auth, logout } = useAuth();
 
-  const handleAction = async (actionKey: string) => {
+  const handleAction = async (actionKey: React.Key) => {
     if (actionKey === "logout") {
       try {
         await logout();
@@ -29,9 +30,8 @@ export const SidebarUserDropdown = () => {
       <DropdownTrigger>
         <Avatar
           as="button"
-          color="secondary"
-          size="md"
-          src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+          size="sm"
+          src={barterLogo as any} // Use the imported image here with type assertion
         />
       </DropdownTrigger>
       <DropdownMenu
