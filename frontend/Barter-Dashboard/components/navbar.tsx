@@ -12,18 +12,16 @@ import { Link } from "@nextui-org/link";
 import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
+import Image from "next/image";
 
 import { siteConfig } from "@/config/site";
+
 import { ThemeSwitch } from "../components/theme-switch";
-import {
-  GithubIcon,
-  LoginIcon
-} from "../components/icons";
-import Image from 'next/image';
+import { GithubIcon, LoginIcon } from "../components/icons";
 
 export const Navbar = () => {
-  const filteredNavItems = siteConfig.navItems.filter(item =>
-    ["Home", "Pricing", "Team", "Dashboard"].includes(item.label)
+  const filteredNavItems = siteConfig.navItems.filter((item) =>
+    ["Home", "Pricing", "Team", "Dashboard"].includes(item.label),
   );
 
   return (
@@ -31,7 +29,12 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <Image src="/logos/Icon_logo.png" alt="Project Helios Logo" width={36} height={36} />
+            <Image
+              alt="Project Helios Logo"
+              height={36}
+              src="/logos/Icon_logo.png"
+              width={36}
+            />
             <p className="font-bold text-inherit">Project Helios</p>
           </NextLink>
         </NavbarBrand>
@@ -64,15 +67,21 @@ export const Navbar = () => {
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem className="hidden md:flex">
-          <NextLink href={siteConfig.navItems.find(item => item.label === 'Login')?.href || '/login'} passHref>
-              <Button
-                as="a"
-                className="text-sm font-normal text-default-600 bg-default-100"
-                startContent={<LoginIcon className="text-danger" />}
-                variant="flat"
-              >
-                Log in
-              </Button>
+          <NextLink
+            passHref
+            href={
+              siteConfig.navItems.find((item) => item.label === "Login")
+                ?.href || "/login"
+            }
+          >
+            <Button
+              as="a"
+              className="text-sm font-normal text-default-600 bg-default-100"
+              startContent={<LoginIcon className="text-danger" />}
+              variant="flat"
+            >
+              Log in
+            </Button>
           </NextLink>
         </NavbarItem>
       </NavbarContent>

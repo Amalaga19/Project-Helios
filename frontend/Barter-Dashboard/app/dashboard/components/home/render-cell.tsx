@@ -9,11 +9,12 @@ interface Props {
 
 export const RenderCell = ({ business, columnKey }: Props) => {
   const cellValue = business[columnKey as keyof typeof business];
+
   switch (columnKey) {
     case "NAME":
       return <span>{cellValue}</span>;
     case "categories":
-      return <span>{cellValue.join(', ')}</span>;
+      return <span>{cellValue.join(", ")}</span>;
     case "BARRIO":
       return <span>{cellValue}</span>;
     case "ADDRESS":

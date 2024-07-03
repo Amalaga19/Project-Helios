@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
+
 import { SidebarWrapper } from "../sidebar/sidebar";
+
 import { SidebarContext } from "./layout-context";
 
 interface Props {
@@ -20,12 +22,11 @@ export const Layout = ({ children }: Props) => {
       value={{
         collapsed: sidebarOpen,
         setCollapsed: handleToggleSidebar,
-      }}>
-      <section className='flex'>
+      }}
+    >
+      <section className="flex">
         <SidebarWrapper /> {/* Ensure this is rendered only once */}
-        <div className="content flex-grow">
-          {children}
-        </div>
+        <div className="content flex-grow">{children}</div>
       </section>
     </SidebarContext.Provider>
   );

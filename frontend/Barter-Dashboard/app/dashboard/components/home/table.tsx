@@ -1,5 +1,5 @@
 // components/TableComponent.tsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Table,
   TableHeader,
@@ -9,7 +9,8 @@ import {
   TableCell,
   Pagination,
 } from "@nextui-org/react";
-import { RenderCell } from './render-cell';
+
+import { RenderCell } from "./render-cell";
 
 interface Business {
   NAME: string;
@@ -24,7 +25,8 @@ interface TableComponentProps {
   businesses: Business[];
 }
 
-const TableComponent: React.FC<TableComponentProps> = ({ businesses = [] }) => { // Set a default value for businesses
+const TableComponent: React.FC<TableComponentProps> = ({ businesses = [] }) => {
+  // Set a default value for businesses
   const [page, setPage] = useState(1);
   const rowsPerPage = 10; // Define the number of rows per page
 
@@ -32,7 +34,10 @@ const TableComponent: React.FC<TableComponentProps> = ({ businesses = [] }) => {
   const totalPages = Math.ceil(businesses.length / rowsPerPage);
 
   // Get the businesses for the current page
-  const currentBusinesses = businesses.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+  const currentBusinesses = businesses.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage,
+  );
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -50,7 +55,10 @@ const TableComponent: React.FC<TableComponentProps> = ({ businesses = [] }) => {
             <TableRow key={item.NAME}>
               {(columnKey) => (
                 <TableCell>
-                  <RenderCell business={item} columnKey={columnKey as keyof Business} />
+                  <RenderCell
+                    business={item}
+                    columnKey={columnKey as keyof Business}
+                  />
                 </TableCell>
               )}
             </TableRow>
@@ -58,9 +66,9 @@ const TableComponent: React.FC<TableComponentProps> = ({ businesses = [] }) => {
         </TableBody>
       </Table>
       <Pagination
-        total={totalPages}
         initialPage={1}
         page={page}
+        total={totalPages}
         onChange={(page) => setPage(page)}
       />
     </div>

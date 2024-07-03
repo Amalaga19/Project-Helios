@@ -1,7 +1,7 @@
 // components/PricingCard.tsx
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 
 interface PricingCardProps {
   title: string;
@@ -12,7 +12,14 @@ interface PricingCardProps {
   onClick: () => void;
 }
 
-const PricingCard: React.FC<PricingCardProps> = ({ title, price, description, features, buttonText, onClick }) => {
+const PricingCard: React.FC<PricingCardProps> = ({
+  title,
+  price,
+  description,
+  features,
+  buttonText,
+  onClick,
+}) => {
   return (
     <div className="border rounded-lg p-6 shadow-lg bg-white">
       <h2 className="text-2xl font-bold mb-4 text-violet-700">{title}</h2>
@@ -21,7 +28,9 @@ const PricingCard: React.FC<PricingCardProps> = ({ title, price, description, fe
       <ul className="text-left mb-6">
         {features.map((feature, index) => (
           <li key={index} className="my-2">
-            <span className="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">{feature}</span>
+            <span className="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">
+              {feature}
+            </span>
           </li>
         ))}
       </ul>

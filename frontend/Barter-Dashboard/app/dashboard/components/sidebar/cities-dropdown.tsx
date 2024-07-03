@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React, { useState } from "react";
+import Image from "next/image";
 import {
   Dropdown,
   DropdownItem,
@@ -29,11 +29,11 @@ export const CitiesDropdown = () => {
       <DropdownTrigger className="cursor-pointer">
         <div className="flex items-center gap-2 p-2 border border-default-300 rounded-lg min-w-[200px]">
           <Image
-            src={city.imageSrc}
             alt={city.name}
-            width={42}
-            height={42}
             className="rounded-full"
+            height={42}
+            src={city.imageSrc}
+            width={42}
           />
           <div className="flex flex-col">
             <h3 className="text-xl font-medium m-0 text-default-900">
@@ -43,6 +43,8 @@ export const CitiesDropdown = () => {
         </div>
       </DropdownTrigger>
       <DropdownMenu
+        aria-label="City Selection"
+        variant="bordered"
         onAction={(e) => {
           if (e === "1") {
             setCity({
@@ -69,78 +71,76 @@ export const CitiesDropdown = () => {
             });
           }
         }}
-        aria-label="City Selection"
-        variant="bordered"
       >
         <DropdownItem
           key="1"
-          startContent={
-            <Image
-              src="/cities/Madrid.jpg"
-              alt="Madrid"
-              width={42}
-              height={42}
-              className="rounded-full"
-            />
-          }
           classNames={{
             base: "py-4",
             title: "text-base font-semibold",
           }}
+          startContent={
+            <Image
+              alt="Madrid"
+              className="rounded-full"
+              height={42}
+              src="/cities/Madrid.jpg"
+              width={42}
+            />
+          }
         >
           Madrid
         </DropdownItem>
         <DropdownItem
           key="2"
-          startContent={
-            <Image
-              src="/cities/Barcelona.png"
-              alt="Barcelona"
-              width={42}
-              height={42}
-              className="rounded-full"
-            />
-          }
           classNames={{
             base: "py-4",
             title: "text-base font-semibold",
           }}
+          startContent={
+            <Image
+              alt="Barcelona"
+              className="rounded-full"
+              height={42}
+              src="/cities/Barcelona.png"
+              width={42}
+            />
+          }
         >
           Barcelona
         </DropdownItem>
         <DropdownItem
           key="3"
-          startContent={
-            <Image
-              src="/cities/Sevilla.png"
-              alt="Sevilla"
-              width={42}
-              height={42}
-              className="rounded-full"
-            />
-          }
           classNames={{
             base: "py-4",
             title: "text-base font-semibold",
           }}
+          startContent={
+            <Image
+              alt="Sevilla"
+              className="rounded-full"
+              height={42}
+              src="/cities/Sevilla.png"
+              width={42}
+            />
+          }
         >
           Sevilla
         </DropdownItem>
         <DropdownItem
           key="4"
-          startContent={
-            <Image
-              src="/cities/Malaga.png"
-              alt="Malaga"
-              width={42}
-              height={42}
-              className="rounded-full"
-            />
-          }
           classNames={{
             base: "py-4",
             title: "text-base font-semibold",
           }}
+          startContent={
+            <Image
+              alt="Malaga"
+              className="rounded-full"
+              height={42}
+              src="/cities/Malaga.png"
+              width={42}
+            />
+          }
         >
           Malaga
         </DropdownItem>

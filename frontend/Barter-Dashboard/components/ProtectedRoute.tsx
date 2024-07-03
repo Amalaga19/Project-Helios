@@ -1,6 +1,7 @@
-import React, { useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '../app/hooks/useAuth';
+import React, { useEffect, ReactNode } from "react";
+import { useRouter } from "next/navigation";
+
+import { useAuth } from "../app/hooks/useAuth";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -12,7 +13,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   useEffect(() => {
     if (!auth.isAuthenticated) {
-      router.replace('/login'); // Use replace to avoid the back button leading to a protected page
+      router.replace("/login"); // Use replace to avoid the back button leading to a protected page
     }
   }, [auth.isAuthenticated, router]);
 

@@ -12,15 +12,17 @@ export const getPlaces = async (lat, lon, radius = 2000, categories = { catering
       lat, 
       lon, 
       radius,
-      catering: categories.catering,
-      commercial: categories.commercial,
-      production: categories.production,
-      service: categories.service,
-      office: categories.office
+      catering: categories.catering ? "1" : "0",
+      commercial: categories.commercial ? "1" : "0",
+      production: categories.production ? "1" : "0",
+      service: categories.service ? "1" : "0",
+      office: categories.office ? "1" : "0",
     },
   });
   return response.data;
 };
+
+
 
 export const getSolarData = async (lat, lon) => {
   const response = await api.get('/get_solar', {

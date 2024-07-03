@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { ChevronUpIcon } from "../icons/sidebar/chevron-up-icon";
 import { Accordion, AccordionItem } from "@nextui-org/react";
-import clsx from "clsx";
+
+import { ChevronUpIcon } from "../icons/sidebar/chevron-up-icon";
 
 interface Props {
   icon: React.ReactNode;
@@ -17,7 +17,7 @@ export const CollapseItems = ({ icon, items, title }: Props) => {
     <div className="flex gap-4 h-full items-center cursor-pointer">
       <Accordion className="px-0">
         <AccordionItem
-          indicator={<ChevronUpIcon />}
+          aria-label="Accordion 1"
           classNames={{
             indicator: "data-[open=true]:-rotate-180",
             trigger:
@@ -26,7 +26,7 @@ export const CollapseItems = ({ icon, items, title }: Props) => {
             title:
               "px-0 flex text-base gap-2 h-full items-center cursor-pointer",
           }}
-          aria-label="Accordion 1"
+          indicator={<ChevronUpIcon />}
           title={
             <div className="flex flex-row gap-2">
               <span>{icon}</span>

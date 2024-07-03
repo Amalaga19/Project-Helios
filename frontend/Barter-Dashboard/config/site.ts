@@ -35,7 +35,7 @@ export const siteConfig = {
     {
       label: "Logout",
       href: "/logout",
-    }
+    },
   ],
   navMenuItems: [
     {

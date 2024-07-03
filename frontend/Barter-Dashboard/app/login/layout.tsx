@@ -1,7 +1,7 @@
 // app/login/layout.tsx
-'use client';
+"use client";
 
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 
 interface LoginLayoutProps {
   children: ReactNode;
@@ -9,9 +9,7 @@ interface LoginLayoutProps {
 
 const LoginLayout = ({ children }: LoginLayoutProps) => {
   return (
-    <div className="flex min-h-screen flex-col lg:flex-row">
-      {children}
-    </div>
+    <div className="flex min-h-screen flex-col lg:flex-row">{children}</div>
   );
 };
 

@@ -111,4 +111,3 @@ export const LoginIcon: React.FC<IconSvgProps> = ({
     </svg>
   );
 };
-
