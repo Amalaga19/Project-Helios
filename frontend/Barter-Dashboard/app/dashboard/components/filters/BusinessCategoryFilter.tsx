@@ -61,7 +61,6 @@ export const BusinessCategoryFilter: React.FC<BusinessCategoryFilterProps> = ({
           </Button>
         </DropdownTrigger>
         <DropdownMenu
-          disallowEmptySelection
           aria-label="Business Category Selection"
           closeOnSelect={false}
           selectedKeys={Array.from(selectedKeys)}

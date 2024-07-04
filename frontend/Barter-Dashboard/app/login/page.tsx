@@ -42,11 +42,11 @@ const LoginPage = () => {
         </nav>
         <div className="flex-1 flex flex-col justify-center">
           <div className="text-3xl lg:text-5xl font-bold mb-8">
-            <p>Welcome back to Project Helios</p>
-            <p>Empowering Madrid with Solar Energy</p>
+            <p>Welcome to Project Helios</p>
+            <p>Powering Up Madrid with Solar Energy</p>
             <p className="text-xl lg:text-2xl mt-4">
               Log in to access our advanced tools and insights, helping you
-              pinpoint the best locations for solar-powered generators
+              choose the best areas for solar-powered generators
             </p>
           </div>
         </div>

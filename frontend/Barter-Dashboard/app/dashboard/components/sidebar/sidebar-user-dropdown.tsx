@@ -51,6 +51,7 @@ export const SidebarUserDropdown = () => {
         </DropdownItem>
         <DropdownItem key="switch">
           <DarkModeSwitch />
+          Toggle Dark Mode
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

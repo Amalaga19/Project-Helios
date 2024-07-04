@@ -32,6 +32,7 @@ interface Place {
   longitude: number;
   categories: { [key: string]: boolean };
   suburb?: string;
+  neighbourhood?: string;
   district?: string;
   street: string;
   city: string;
@@ -50,17 +51,29 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const [localBusinesses, setLocalBusinesses] = useState<any[]>([]);
   const [radius, setRadius] = useState<number>(2000);
   const [mapCenter, setMapCenter] = useState<[number, number]>(center);
-  const [showModal, setShowModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showSolarModal, setShowSolarModal] = useState(false);
+  const [solarData, setSolarData] = useState<any>(null);
+  const [clickedLocation, setClickedLocation] = useState<[number, number] | null>(null);
 
   const handleMapClick = async (e: L.LeafletMouseEvent) => {
     if (Object.values(selectedCategories).every((value) => value === 0)) {
-      setShowModal(true);
+      setShowCategoryModal(true);
       return;
     }
-
     const { lat, lng } = e.latlng;
-    setMapCenter([lat, lng]);
-    fetchData(lat, lng, selectedCategories);
+    setClickedLocation([lat, lng]);
+    fetchSolarData(lat, lng);
+  };
+
+  const fetchSolarData = async (lat: number, lng: number) => {
+    try {
+      const data = await getSolarData(lat, lng);
+      setSolarData(data);
+      setShowSolarModal(true);
+    } catch (error) {
+      console.error("Error fetching solar data:", error);
+    }
   };
 
   const handleCategoryClick = (category: string) => {
@@ -78,8 +91,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
       categories: Object.keys(place.categories).filter(
         (key) => place.categories[key]
       ),
-      BARRIO: place.suburb || place.district || "",
-      ADDRESS: `${place.street}, ${place.city}, ${place.postcode}`,
+      BARRIO: place.suburb || place.neighbourhood || place.district || "",
+      LOCATION: `${place.street}, ${place.city}, ${place.postcode}`,
     }));
   };
 
@@ -101,7 +114,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
     console.log("Categories received:", categories);
 
     try {
-      const data = await getPlaces(lat, lon, radius, convertCategories(categories));
+      const data = await getPlaces(lat, lon, convertCategories(categories));
       const transformedData = transformData(data);
       setLocalBusinesses(transformedData);
       setBusinesses(transformedData);
@@ -111,7 +124,9 @@ const MapComponent: React.FC<MapComponentProps> = ({
   };
 
   useEffect(() => {
-    fetchData(mapCenter[0], mapCenter[1], selectedCategories);
+    if (Object.values(selectedCategories).some((value) => value === 1)) {
+      fetchData(mapCenter[0], mapCenter[1], selectedCategories);
+    }
   }, [mapCenter, selectedCategories]);
 
   const MapEvents = () => {
@@ -125,28 +140,44 @@ const MapComponent: React.FC<MapComponentProps> = ({
     return localBusinesses;
   }, [localBusinesses]);
 
+  const modalStyles = {
+    dark: {
+      backgroundColor: '#1a202c', // Dark background color
+      color: '#f7fafc', // Light text color
+      border: '1px solid #2d3748', // Border color
+      borderRadius: '0.5rem',
+      padding: '1rem',
+    },
+    light: {
+      backgroundColor: '#f7fafc', // Light background color
+      color: '#1a202c', // Dark text color
+      border: '1px solid #e2e8f0', // Border color
+      borderRadius: '0.5rem',
+      padding: '1rem',
+    },
+    button: {
+      border: '1px solid',
+      textAlign: 'center' as const,
+      display: 'block',
+      margin: '0 auto',
+      padding: '0.5rem 1rem',
+      borderRadius: '0.25rem',
+      transition: 'background-color 0.3s ease, border-color 0.3s ease',
+    },
+    buttonHover: {
+      backgroundColor: '#2d3748', // Darker background color on hover
+      borderColor: '#4a5568', // Darker border color on hover
+      color: '#f7fafc', // Light text color on hover
+    }
+  };
+
+  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
   return (
     <div className="relative" style={{ height: "500px", width: "100%" }}>
-      <div className="absolute top-2 left-2 z-10 bg-white p-4 shadow-md rounded-md">
-        <label htmlFor="radius">Radius (km): </label>
-        <input
-          id="radius"
-          max="5"
-          min="1"
-          name="radius"
-          step="0.1"
-          type="range"
-          value={radius / 2000}
-          onChange={(e) => {
-            const newRadius = Number(e.target.value) * 1000;
-            setRadius(newRadius);
-            fetchData(mapCenter[0], mapCenter[1], selectedCategories);
-          }}
-        />
-      </div>
       <DynamicMap
         center={mapCenter}
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "100%", width: "100%", zIndex: 1 }}
         zoom={13}
       >
         <TileLayer
@@ -186,16 +217,122 @@ const MapComponent: React.FC<MapComponentProps> = ({
         })}
       </DynamicMap>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Select Business Category</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Please select a business category to proceed.</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Close
-          </Button>
-        </Modal.Footer>
+      <Modal
+        show={showCategoryModal}
+        onHide={() => setShowCategoryModal(false)}
+        centered
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          maxWidth: '400px',
+          width: '100%',
+          zIndex: 1000,
+          ...isDarkMode ? modalStyles.dark : modalStyles.light,
+          boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
+          border: 'none',
+        }}
+        backdrop="static"
+      >
+        <div style={{ ...isDarkMode ? modalStyles.dark : modalStyles.light, border: 'none' }}>
+          <Modal.Header closeButton style={{ textAlign: 'center', borderBottom: 'none' }}>
+            <Modal.Title style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Select Business Category</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="text-center" style={{ borderBottom: 'none' }}>
+            Please select one or more business categories to proceed.
+          </Modal.Body>
+          <Modal.Footer style={{ textAlign: 'center', borderTop: 'none', display: 'flex', justifyContent: 'center', padding: '1rem' }}>
+            <Button 
+              variant="secondary" 
+              onClick={() => setShowCategoryModal(false)} 
+              style={{ ...modalStyles.button, ...isDarkMode ? { borderColor: '#f7fafc' } : { borderColor: '#1a202c' } }}
+              onMouseOver={(e) => { 
+                e.currentTarget.style.backgroundColor = modalStyles.buttonHover.backgroundColor; 
+                e.currentTarget.style.borderColor = modalStyles.buttonHover.borderColor; 
+                e.currentTarget.style.color = modalStyles.buttonHover.color; 
+              }}
+              onMouseOut={(e) => { 
+                e.currentTarget.style.backgroundColor = ''; 
+                e.currentTarget.style.borderColor = ''; 
+                e.currentTarget.style.color = ''; 
+              }}
+            >
+              Close
+            </Button>
+          </Modal.Footer>
+        </div>
+      </Modal>
+
+      <Modal
+        show={showSolarModal}
+        onHide={() => setShowSolarModal(false)}
+        centered
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          maxWidth: '400px',
+          width: '100%',
+          zIndex: 1000,
+          ...isDarkMode ? modalStyles.dark : modalStyles.light,
+          boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
+          border: 'none',
+        }}
+        backdrop="static"
+      >
+        <div style={{ ...isDarkMode ? modalStyles.dark : modalStyles.light, border: 'none' }}>
+          <Modal.Header closeButton style={{ textAlign: 'center', borderBottom: 'none' }}>
+            <Modal.Title style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Solar Data</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="text-center" style={{ borderBottom: 'none' }}>
+            <h4>Average Monthly Solar Radiation for the Area:</h4>
+            <p>{solarData?.radiation} KWh/m²</p>
+            <p>Do you want to proceed with the search?</p>
+          </Modal.Body>
+          <Modal.Footer style={{ textAlign: 'center', borderTop: 'none', display: 'flex', justifyContent: 'center', padding: '1rem' }}>
+            <Button 
+              variant="secondary" 
+              onClick={() => setShowSolarModal(false)} 
+              style={{ ...modalStyles.button, ...isDarkMode ? { borderColor: '#f7fafc' } : { borderColor: '#1a202c' } }}
+              onMouseOver={(e) => { 
+                e.currentTarget.style.backgroundColor = modalStyles.buttonHover.backgroundColor; 
+                e.currentTarget.style.borderColor = modalStyles.buttonHover.borderColor; 
+                e.currentTarget.style.color = modalStyles.buttonHover.color; 
+              }}
+              onMouseOut={(e) => { 
+                e.currentTarget.style.backgroundColor = ''; 
+                e.currentTarget.style.borderColor = ''; 
+                e.currentTarget.style.color = ''; 
+              }}
+            >
+              No
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                if (clickedLocation) {
+                  setMapCenter(clickedLocation);
+                  setShowSolarModal(false);
+                }
+              }}
+              style={{ ...modalStyles.button, ...isDarkMode ? { borderColor: '#f7fafc' } : { borderColor: '#1a202c' } }}
+              onMouseOver={(e) => { 
+                e.currentTarget.style.backgroundColor = modalStyles.buttonHover.backgroundColor; 
+                e.currentTarget.style.borderColor = modalStyles.buttonHover.borderColor; 
+                e.currentTarget.style.color = modalStyles.buttonHover.color; 
+              }}
+              onMouseOut={(e) => { 
+                e.currentTarget.style.backgroundColor = ''; 
+                e.currentTarget.style.borderColor = ''; 
+                e.currentTarget.style.color = ''; 
+              }}
+            >
+              Yes
+            </Button>
+          </Modal.Footer>
+        </div>
       </Modal>
     </div>
   );
@@ -208,40 +345,19 @@ interface PopupContentProps {
     LONGITUDE: string;
     categories: string[];
     BARRIO: string;
-    ADDRESS: string;
+    LOCATION: string;
   };
 }
 
 const PopupContent: React.FC<PopupContentProps> = ({ business }) => {
-  const [solarData, setSolarData] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchSolarData = async () => {
-      try {
-        const data = await getSolarData(business.LATITUDE, business.LONGITUDE);
-        setSolarData(data);
-      } catch (error) {
-        console.error("Error fetching solar data:", error);
-      }
-    };
-
-    fetchSolarData();
-  }, [business]);
-
   return (
     <div>
       <h3>{business.NAME}</h3>
       <p>Categories: {business.categories?.join(", ")}</p>
       <p>Barrio: {business.BARRIO}</p>
-      <p>Address: {business.ADDRESS}</p>
+      <p>Location: {business.LOCATION}</p>
       <p>Longitude: {business.LONGITUDE}</p>
       <p>Latitude: {business.LATITUDE}</p>
-      {solarData && (
-        <>
-          <h4>Solar Data:</h4>
-          <p>{JSON.stringify(solarData)}</p>
-        </>
-      )}
     </div>
   );
 };

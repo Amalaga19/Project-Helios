@@ -1,11 +1,11 @@
 // utils.js
 export const categoryColors = {
-  catering: 'red',
-  commercial: 'blue',
-  production: 'green',
-  office: 'purple',
-  service: 'yellow',
-  multiple: 'orange',
+  catering: '#4b0082', 
+  commercial: '#008080',
+  production: '#00FFFF',
+  office: '#931621',
+  service: '#FF1493',
+  multiple: '#FFFF00',
 };
 
 
