@@ -1,7 +1,11 @@
+// Importing React to use React components.
 import React from "react";
 
+// Defining the HomeIcon functional component.
 export const HomeIcon = () => {
+  // Returning the JSX structure of the component.
   return (
+    // SVG element defining the home icon.
     <svg
       fill="none"
       height="24"
@@ -9,6 +13,7 @@ export const HomeIcon = () => {
       width="24"
       xmlns="http://www.w3.org/2000/svg"
     >
+      {/* Path element defining the shape of the home icon. */}
       <path
         className="fill-default-400"
         clipRule="evenodd"

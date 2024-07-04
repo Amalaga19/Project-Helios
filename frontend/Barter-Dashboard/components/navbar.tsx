@@ -1,3 +1,5 @@
+// This file defines the Navbar component using the NextUI library and custom components.
+// The Navbar includes navigation links, branding, and a theme switcher.
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -19,15 +21,19 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "../components/theme-switch";
 import { GithubIcon, LoginIcon } from "../components/icons";
 
+// The Navbar component definition.
 export const Navbar = () => {
+    // Filter navigation items to include only specific labels.
   const filteredNavItems = siteConfig.navItems.filter((item) =>
     ["Home", "Pricing", "Team", "Dashboard"].includes(item.label),
   );
 
   return (
     <NextUINavbar maxWidth="xl" position="sticky">
+            {/* Left-aligned content including the brand logo and main navigation links */}
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
+                    {/* Link to the home page with the brand logo */}
           <NextLink className="flex justify-start items-center gap-1" href="/">
             <Image
               alt="Project Helios Logo"
@@ -55,7 +61,7 @@ export const Navbar = () => {
           ))}
         </ul>
       </NavbarContent>
-
+            {/* Right-aligned content including social links, theme switcher, and login button */}
       <NavbarContent
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
@@ -85,7 +91,7 @@ export const Navbar = () => {
           </NextLink>
         </NavbarItem>
       </NavbarContent>
-
+                  {/* Right-aligned content for smaller screens including GitHub link, theme switch, and menu toggle */}
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         <Link isExternal aria-label="Github" href={siteConfig.links.github}>
           <GithubIcon className="text-default-500" />

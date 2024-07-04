@@ -1,3 +1,4 @@
+// This file defines a ThemeSwitch component that allows users to toggle between light and dark modes.
 "use client";
 
 import { FC } from "react";
@@ -9,17 +10,19 @@ import clsx from "clsx";
 
 import { SunFilledIcon, MoonFilledIcon } from "../components/icons";
 
+// Interface for the ThemeSwitch component's props.
 export interface ThemeSwitchProps {
-  className?: string;
-  classNames?: SwitchProps["classNames"];
+  className?: string; // Optional additional class names.
+  classNames?: SwitchProps["classNames"]; // Optional class names for specific parts of the switch.
 }
 
+// The ThemeSwitch component definition.
 export const ThemeSwitch: FC<ThemeSwitchProps> = ({
   className,
   classNames,
 }) => {
-  const { theme, setTheme } = useTheme();
-  const isSSR = useIsSSR();
+  const { theme, setTheme } = useTheme(); // Hook to get and set the current theme.
+  const isSSR = useIsSSR(); // Hook to determine if server-side rendering is happening.
 
   const onChange = () => {
     theme === "light" ? setTheme("dark") : setTheme("light");
@@ -33,8 +36,8 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
     getInputProps,
     getWrapperProps,
   } = useSwitch({
-    isSelected: theme === "light" || isSSR,
-    "aria-label": `Switch to ${theme === "light" || isSSR ? "dark" : "light"} mode`,
+    isSelected: theme === "light" || isSSR, // Determine if the switch is selected based on the current theme or SSR status.
+    "aria-label": `Switch to ${theme === "light" || isSSR ? "dark" : "light"} mode`, // Accessibility label for the switch.
     onChange,
   });
 
@@ -48,8 +51,8 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
         ),
       })}
     >
-      <VisuallyHidden>
-        <input {...getInputProps()} />
+      <VisuallyHidden> 
+        <input {...getInputProps()} /> 
       </VisuallyHidden>
       <div
         {...getWrapperProps()}
@@ -71,9 +74,9 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
         })}
       >
         {!isSelected || isSSR ? (
-          <SunFilledIcon size={22} />
+          <SunFilledIcon size={22} /> // Display sun icon for light mode.
         ) : (
-          <MoonFilledIcon size={22} />
+          <MoonFilledIcon size={22} /> // Display moon icon for dark mode.
         )}
       </div>
     </Component>
