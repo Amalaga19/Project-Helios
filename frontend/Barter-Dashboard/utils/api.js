@@ -2,11 +2,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://barter-corporateproject.ew.r.appspot.com', // Adjust according to your backend URL
+  baseURL: 'https://barter-corporateproject.ew.r.appspot.com', // Adjust according to your backend URL
   withCredentials: true, // To handle cookies for sessions
 });
-
-console.log('API base URL:', api.defaults.baseURL);
 
 export const getPlaces = async (lat, lon, categories = { catering: true, commercial: true, production: true, service: true, office: true }) => {
   const response = await api.get('/get_places', {
@@ -22,6 +20,8 @@ export const getPlaces = async (lat, lon, categories = { catering: true, commerc
   });
   return response.data;
 };
+
+
 
 export const getSolarData = async (lat, lon) => {
   const response = await api.get('/get_solar', {
