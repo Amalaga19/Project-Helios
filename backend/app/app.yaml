@@ -12,3 +12,6 @@ resources:
 handlers:
 - url: /.*
   script: auto
+
+env_variables:
+  SECRET_KEY: "MCSBT"

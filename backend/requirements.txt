@@ -14,4 +14,3 @@ uvicorn[standard]
 pydantic
 azure-identity
 geoalchemy2
-shapely
