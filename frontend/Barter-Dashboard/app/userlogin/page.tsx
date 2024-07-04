@@ -67,7 +67,7 @@ const UserLogin = () => {
       <h1 className="text-2xl font-bold mb-6">Log in to your account</h1>
       <input
         className="w-full max-w-md px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary"
-        placeholder="Username*"
+        placeholder="Username"
         type="text"
         value={username}
         onChange={(e) => setUsername(e.target.value)}

@@ -9,15 +9,17 @@ import { useAuth } from "../hooks/useAuth";
 const SignUpPage = () => {
   const { register } = useAuth();
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState({ email: "", password: "", form: "" });
+  const [errors, setErrors] = useState({
+    username: "",
+    password: "",
+    form: "",
+  });
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    return emailRegex.test(email);
+  const validateUsername = (username: string) => {
+    return username.trim() !== "";
   };
 
   const validatePassword = (password: string) => {
@@ -27,11 +29,11 @@ const SignUpPage = () => {
   };
 
   const handleContinue = async () => {
-    let emailError = "";
+    let usernameError = "";
     let passwordError = "";
 
-    if (!validateEmail(email)) {
-      emailError = "Please enter a valid email address.";
+    if (!validateUsername(username)) {
+      usernameError = "Please enter a valid username.";
     }
 
     if (!validatePassword(password)) {
@@ -39,19 +41,19 @@ const SignUpPage = () => {
         "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.";
     }
 
-    if (emailError || passwordError) {
-      setErrors({ email: emailError, password: passwordError, form: "" });
+    if (usernameError || passwordError) {
+      setErrors({ username: usernameError, password: passwordError, form: "" });
 
       return;
     }
 
     try {
-      await register(email, password);
+      await register(username, password);
       router.push("/dashboard");
     } catch (error) {
       console.error("Registration failed:", error);
       setErrors({
-        email: "",
+        username: "",
         password: "",
         form: "Registration failed. Please try again.",
       });
@@ -63,13 +65,13 @@ const SignUpPage = () => {
       <h1 className="text-2xl font-bold mb-6">Create your account</h1>
       <input
         className="w-full max-w-md px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary"
-        placeholder="Email address*"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Username"
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
       />
-      {errors.email && (
-        <p className="text-red-500 text-sm mb-4">{errors.email}</p>
+      {errors.username && (
+        <p className="text-red-500 text-sm mb-4">{errors.username}</p>
       )}
       <div className="relative w-full max-w-md">
         <input

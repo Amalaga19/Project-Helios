@@ -12,6 +12,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import barterLogo from "../icons/sidebar/barter_logo.png"; // Make sure this path is correct
 
 import { DarkModeSwitch } from "./darkmodeswitch";
+import { logoutUser } from "@/utils/api";
 
 export const SidebarUserDropdown = () => {
   const { auth, logout } = useAuth();
@@ -46,7 +47,7 @@ export const SidebarUserDropdown = () => {
           <p>{auth.userId || "username@example.com"}</p>
         </DropdownItem>
         <DropdownItem key="configurations">My Downloads</DropdownItem>
-        <DropdownItem key="logout" className="text-danger " color="danger">
+        <DropdownItem key="logout" className="text-danger " color="danger" onClick={logoutUser}>
           Log Out
         </DropdownItem>
         <DropdownItem key="switch">

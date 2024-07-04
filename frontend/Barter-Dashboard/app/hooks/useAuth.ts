@@ -59,10 +59,10 @@ export const useAuth = () => {
     }
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (username: string, password: string) => {
     try {
       const response = await axiosInstance.post("/register", {
-        email,
+        username,
         password,
       });
       const userId = response.data.username;
