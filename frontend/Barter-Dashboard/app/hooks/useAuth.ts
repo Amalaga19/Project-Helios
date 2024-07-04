@@ -3,7 +3,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
-const apiBaseURL = "http://localhost:5000"; // Ensure this matches your backend URL
+const apiBaseURL = "https://barter-corporateproject.ew.r.appspot.com"; // Ensure this matches your backend URL
 // Create an instance of axios with the base URL and credentials set to true
 const axiosInstance = axios.create({
   baseURL: apiBaseURL,
