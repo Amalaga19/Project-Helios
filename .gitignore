@@ -25,3 +25,4 @@ secrets.txt
 credentials.json
 .env
 backend/.env
+.vercel
