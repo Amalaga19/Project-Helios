@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || 'https://barter-corporateproject.ew.r.appspot.com', // Adjust according to your backend URL
+  baseURL:'https://barter-corporateproject.ew.r.appspot.com', // Adjust according to your backend URL
   withCredentials: true, // To handle cookies for sessions
 });
 
