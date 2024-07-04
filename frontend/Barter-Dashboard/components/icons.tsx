@@ -1,7 +1,9 @@
+// This file defines several React functional components for SVG icons, including Logo, GithubIcon, MoonFilledIcon, SunFilledIcon, and LoginIcon.
 import * as React from "react";
 
 import { IconSvgProps } from "@/types";
 
+// Logo component, rendering a custom SVG icon.
 export const Logo: React.FC<IconSvgProps> = ({
   size = 36,
   width,
@@ -24,8 +26,9 @@ export const Logo: React.FC<IconSvgProps> = ({
   </svg>
 );
 
+// GithubIcon component, rendering the GitHub logo as an SVG icon.
 export const GithubIcon: React.FC<IconSvgProps> = ({
-  size = 24,
+  size = 24, // Default size of the icon.
   width,
   height,
   ...props
@@ -47,8 +50,9 @@ export const GithubIcon: React.FC<IconSvgProps> = ({
   );
 };
 
+// MoonFilledIcon component, rendering a moon icon with a filled design.
 export const MoonFilledIcon = ({
-  size = 24,
+  size = 24, // Default size of the icon.
   width,
   height,
   ...props
@@ -69,8 +73,9 @@ export const MoonFilledIcon = ({
   </svg>
 );
 
+// SunFilledIcon component, rendering a sun icon with a filled design.
 export const SunFilledIcon = ({
-  size = 24,
+  size = 24, // Default size of the icon.
   width,
   height,
   ...props
@@ -91,8 +96,9 @@ export const SunFilledIcon = ({
   </svg>
 );
 
+// LoginIcon component, rendering a login icon with a filled design.
 export const LoginIcon: React.FC<IconSvgProps> = ({
-  size = 24,
+  size = 24, // Default size of the icon.
   width,
   height,
   ...props

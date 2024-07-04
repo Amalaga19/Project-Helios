@@ -1,8 +1,13 @@
+// Importing React to use React components.
 import React from "react";
 
+// Defining the GithubIcon functional component.
 export const GithubIcon = () => {
+  // Returning the JSX structure of the component.
   return (
+    // SVG element defining the GitHub icon.
     <svg height="24" width="24" xmlns="http://www.w3.org/2000/svg">
+      {/* Path element defining the shape of the GitHub icon. */}
       <path
         className="fill-default-400"
         clipRule="evenodd"
