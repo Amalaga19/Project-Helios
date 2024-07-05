@@ -27,19 +27,19 @@ export default function Home() {
       title: "The Why",
       subtitle: "Understanding the need",
       img: "/pictures/bater-building.jpg",
-      content: "Detailed explanation about the need for this project.",
+      content: "Our goal is to optimize the placement of solar panels and identify potential business partners within Madrid.",
     },
     {
       title: "The What",
       subtitle: "Project Overview",
       img: "/pictures/barter-satellite.jpg",
-      content: "Detailed project overview and scope.",
+      content: "We are analyzing areas within a 2 to 5 km radius from a given point to provide strategic data nearby businesses and their solar radiation.",
     },
     {
       title: "The How",
       subtitle: "Implementation Strategy",
       img: "/pictures/bater-car.jpg",
-      content: "Steps and strategies for implementing the project.",
+      content: "This involves integrating data from APIs into an MSSQL database, developing a backend with Flask, creating a frontend with React, and deploying the application using Google Cloud.",
     },
   ];
 
