@@ -111,7 +111,7 @@ export const LoginIcon: React.FC<IconSvgProps> = ({
       {...props}
     >
       <path
-        d="M10 2a1 1 0 0 1 1 1v7h7a1 1 0 0 1 0 2h-7v7a1 1 0 0 1-2 0v-7H4a1 1 0 1 1 0-2h5V3a1 1 0 0 1 1-1zm7 20a1 1 0 0 1-1-1v-3H8v3a1 1 0 0 1-2 0v-4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1z"
+        d="M10 17v-3H3v-4h7V7l5 5-5 5m0-15h9a2 2 0 012 2v16a2 2 0 01-2 2h-9a2 2 0 01-2-2v-2h2v2h9V4h-9v2H8V4a2 2 0 012-2z"
         fill="currentColor"
       />
     </svg>
