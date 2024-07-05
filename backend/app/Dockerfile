@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 # Set environment variables
 ENV ACCEPT_EULA=Y
 ENV LANG=C.UTF-8
-ENV SECRET_KEY = "MCSBT"
+ENV SECRET_KEY="MCSBT"
 
 # Set the working directory
 WORKDIR /app

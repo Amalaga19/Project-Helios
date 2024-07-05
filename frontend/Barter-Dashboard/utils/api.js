@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL:'https://barter-corporateproject.ew.r.appspot.com', // Adjust according to your backend URL
+  baseURL:'https://barter-project-ie-mcsbt.ew.r.appspot.com', // Adjust according to your backend URL
   withCredentials: true, // To handle cookies for sessions
 });
 

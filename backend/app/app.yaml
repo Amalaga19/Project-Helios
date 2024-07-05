@@ -1,17 +1,6 @@
 runtime: custom
 env: flex
 
-manual_scaling:
-  instances: 1
-
-resources:
-  cpu: 1
-  memory_gb: 4
-  disk_size_gb: 10
-
-handlers:
-- url: /.*
-  script: auto
-
 env_variables:
+  DB_CONNECTION_STRING: "mssql+pyodbc://lbarbion:Corporateproject!@corporateproject.database.windows.net:1433/CorporateProject?driver=ODBC+Driver+18+for+SQL+Server"
   SECRET_KEY: "MCSBT"
