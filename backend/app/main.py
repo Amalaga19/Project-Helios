@@ -13,13 +13,10 @@ from sqlalchemy import text
 import datetime
 import logging
 
-radius_meters = 2000
-
-ph = PasswordHasher()
-
-
 # Load environment variables from .env file
 load_dotenv()
+
+#Set up the Flask app, CORS policy, database connection and global variables
 
 app = Flask(__name__)
 CORS = CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
@@ -28,6 +25,10 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DB_CONNECTION_STRING")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+radius_meters = 2000
+
+ph = PasswordHasher()
 
 db.init_app(app)
 
@@ -39,6 +40,7 @@ with app.app_context():
 # Enable debug logging
 app.logger.setLevel(logging.DEBUG)
 
+# This function adds the CORS headers to the response
 def add_cors_headers(response):
     origin = request.headers.get('Origin')
     if origin:
@@ -56,7 +58,6 @@ long_query = f"""
         """#, SERVICE_RECYCLING, SERVICE_VEHICLE, SERVICE_POLICE, SERVICE_SOCIAL_FACILITY, SERVICE_FINANCIAL, SERVICE_FUNERAL_DIRECTORS, SERVICE_POST, SERVICE_BEAUTY, SERVICE_ESTATE_AGENT, SERVICE_TAXI, SERVICE_TRAVEL_AGENCY, SERVICE_CLEANING, SERVICE_BOOKMAKER, SERVICE_TAILOR, SERVICE_LOCKSMITH, COMMERCIAL_HOUSEWARE_AND_HARDWARE, COMMERCIAL_ELEKTRONICS, COMMERCIAL_TRADE, COMMERCIAL_OUTDOOR_AND_SPORT, COMMERCIAL_SHOPPING_MALL, COMMERCIAL_SUPERMARKET, COMMERCIAL_MARKETPLACE, COMMERCIAL_DEPARTMENT_STORE, COMMERCIAL_TICKETS_AND_LOTTERY, COMMERCIAL_FURNITURE_AND_INTERIOR, COMMERCIAL_BOOKS, COMMERCIAL_CONVENIENCE, COMMERCIAL_GARDEN, COMMERCIAL_VEHICLE, COMMERCIAL_HEALTH_AND_BEAUTY, COMMERCIAL_FLORIST, COMMERCIAL_SMOKING, COMMERCIAL_FOOD_AND_DRINK, COMMERCIAL_KIOSK, COMMERCIAL_CLOTHING, COMMERCIAL_HOBBY, COMMERCIAL_TOY_AND_GAME, COMMERCIAL_DISCOUNT_STORE, COMMERCIAL_NEWSAGENT, COMMERCIAL_PET, COMMERCIAL_GIFT_AND_SOUVENIR, COMMERCIAL_STATIONERY, COMMERCIAL_JEWELRY, COMMERCIAL_BAG, COMMERCIAL_CHEMIST, COMMERCIAL_ART, COMMERCIAL_EROTIC, COMMERCIAL_WATCHES, COMMERCIAL_SECOND_HAND, COMMERCIAL_VIDEO_AND_MUSIC, COMMERCIAL_ANTIQUES, COMMERCIAL_GAS, COMMERCIAL_BABY_GOODS, COMMERCIAL_ENERGY, COMMERCIAL_WEDDING, COMMERCIAL_WEAPONS, CATERING_RESTAURANT, CATERING_PUB, CATERING_FAST_FOOD, CATERING_BAR, CATERING_CAFE, CATERING_TAPROOM, CATERING_BIERGARTEN, CATERING_ICE_CREAM, CATERING_FOOD_COURT, OFFICE_GOVERNMENT, OFFICE_EDUCATIONAL_INSTITUTION, OFFICE_FOUNDATION, OFFICE_COMPANY, OFFICE_RESEARCH, OFFICE_DIPLOMATIC, OFFICE_INSURANCE, OFFICE_POLITICAL_PARTY, OFFICE_EMPLOYMENT_AGENCY, OFFICE_NON_PROFIT, OFFICE_ESTATE_AGENT, OFFICE_ASSOCIATION, OFFICE_FINANCIAL, OFFICE_IT, OFFICE_NOTARY, OFFICE_ENERGY_SUPPLIER, OFFICE_COWORKING, OFFICE_LAWYER, OFFICE_CHARITY, OFFICE_SECURITY, OFFICE_TRAVEL_AGENT, OFFICE_ARCHITECT, OFFICE_TAX_ADVISOR, OFFICE_ACCOUNTANT, OFFICE_RELIGION, OFFICE_NEWSPAPER, OFFICE_TELECOMMUNICATION, OFFICE_CONSULTING, OFFICE_ADVERTISING_AGENCY, OFFICE_LOGISTICS, OFFICE_FINANCIAL_ADVISOR, PRODUCTION_FACTORY, PRODUCTION_BREWERY, PRODUCTION_POTTERY, PRODUCTION_WINERY
         #FROM PLACES"""
 
-#Below the authentication hashing I used for my capstone, we can modify them later as per our database schema -Andres
 def hash_password(password): #Hashes the password so that it is stored securely in the database
     ph = PasswordHasher()
     return ph.hash(password)
@@ -78,7 +79,7 @@ def check_password(username, password): #This function checks if the password is
         return False
 
 
-def get_solar_data_average(lon, lat):
+def get_solar_data_average(lon, lat): #This function gets the average solar radiation data for a given location
     radiation_total = 0
     count = 0
     average = 0
@@ -122,7 +123,7 @@ def get_solar_data_average(lon, lat):
         app.logger.error(f"Response Content: {response.content.decode('utf-8')}")
         return None
 
-def get_query(catering, commercial, production, service, office):
+def get_query(catering, commercial, production, service, office): #This function generates the SQL query based on the selected categories
     categories = {
         'CATERING': catering,
         'COMMERCIAL': commercial,
@@ -143,32 +144,14 @@ def get_query(catering, commercial, production, service, office):
     """
     return query
 
-def record_request(longitude, latitude, radius, catering, commercial, production, service, office):
+def record_request(longitude, latitude, radius, catering, commercial, production, service, office): #This function records the request in the database
     right_now = datetime.datetime.now()
     new_request = Requests(DATE_TIME = right_now, LONGITUDE=longitude, LATITUDE=latitude, RADIUS=radius, CATERING=catering, COMMERCIAL=commercial, PRODUCTION=production, SERVICE=service, OFFICE=office)
     db.session.add(new_request)
     db.session.commit()
 
-# Define routes
-@app.route('/')
-def home():
-    #To be removed later
-    #Query for all the elements of the places table
-    query = text(long_query)
-    try:
-        places = db.session.execute(query)
-        places_list = []
-        for place in places:
-            place_dict = Places.place_dict(place) #This is a method in the Places class that converts the row to a dictionary
-            places_list.append(place_dict) 
-            if len(places_list) > 20:
-                break
-        return jsonify(places=places_list)
-    except Exception as e:
-        app.logger.error(f"Error fetching places: {e}")
-        return jsonify({"error": "Internal Server Error"}), 500
-
-@app.route('/get_places', methods=['GET'])
+#Routes
+@app.route('/get_places', methods=['GET']) #This route is used to get the places based on the selected categories and the location
 def get_places():
     try:
         lat = float(request.args.get('lat'))
@@ -189,6 +172,7 @@ def get_places():
     app.logger.debug(f"Category selections - Catering: {catering}, Commercial: {commercial}, Production: {production}, Service: {service}, Office: {office}")
 
     query = text(get_query(catering, commercial, production, service, office))
+    record_request(lon, lat, radius_meters, catering, commercial, production, service, office)
     try:
         results = db.session.execute(query, {'point': f'POINT({lon} {lat})', 'radius_meters': radius_meters})
         places_list = []
@@ -196,20 +180,20 @@ def get_places():
             place_dict = Places.place_dict(place) #This is a method in the Places class that converts the row to a dictionary
             if place_dict not in places_list:
                 places_list.append(place_dict)
-        app.logger.debug(f"Found places: {places_list}")
         return jsonify(places=places_list)
     except Exception as e:
-        app.logger.error(f"Error fetching places: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
 
 @app.route('/get_solar', methods=['GET'])
-def get_solar():
-    lon = request.args.get('lon', type=float)
-    lat = request.args.get('lat', type=float)
-    
-    if lon is None or lat is None:
-        return jsonify({"error": "Longitude and latitude are required parameters"}), 400
-
+def get_solar(): #This route is used to get the solar radiation data for a given location
+    try:
+        lat = float(request.args.get('lat'))
+    except:
+        return jsonify({"error": "Latitude must be a valid number"}), 400
+    try:
+        lon = float(request.args.get('lon'))
+    except:
+        return jsonify({"error": "Longitude must be a valid number"}), 400
     lon = round(lon, 3)
     lat = round(lat, 3)
     radiation_average = get_solar_data_average(lon, lat)
@@ -219,7 +203,23 @@ def get_solar():
     
     return jsonify(radiation=f"{radiation_average:.2f}")
 
-#Login-Logout routes I used for Capstone - Andres
+# @app.route('/get_requests', methods=['GET']) #This route is used to get the requests made by the user
+# def get_requests():
+#     if 'username' in session:
+#         username = session['username']
+#         user = Users.query.filter_by(USERNAME=username).first()
+#         if user:
+#             requests = Requests.query.filter_by(USER_ID=user.USER_ID).all()
+#             requests_list = []
+#             for request in requests:
+#                 request_dict = Requests.request_dict(request)
+#                 requests_list.append(request_dict)
+#             return jsonify(requests=requests_list)
+#         else:
+#             return jsonify({"error": "User not found"}), 404
+#     else:
+#         pass
+
 
 @app.route('/register', methods=['POST', 'OPTIONS'])
 def register(): #This route is used to register a new user
@@ -255,17 +255,10 @@ def login(): #This route is used to log in the user
     else:
         return jsonify({"success": "false", "message": "User not found or incorrect password."}), 404
 
-@app.route('/logout', methods=['GET']) #This route is used to log out the user
-def logout():
+@app.route('/logout', methods=['GET']) 
+def logout(): #This route is used to log out the user
     session.clear()
     return jsonify({"message": "Logged out."}), 200
-
-@app.route('/check-auth', methods=['GET'])
-def check_auth():
-    if 'username' in session:
-        return jsonify({"userId": session['username']}), 200
-    else:
-        return jsonify({"error": "Not authenticated"}), 401
 
 
 if __name__ == "__main__":
