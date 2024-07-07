@@ -2,9 +2,8 @@
 "use client";
 
 import React from "react";
-
 import PricingCard from "@/components/PricingCard";
-import { title } from "@/components/primitives";
+import { title } from "@/components/primitives"; // Ensure this is correctly imported and used
 
 import MainLayout from "../layouts/MainLayout";
 
@@ -19,19 +18,12 @@ export default function PricingPage() {
 
   return (
     <section className="flex flex-col items-center justify-center gap-4 py-12 px-4 md:py-16 md:px-8">
-      <div
-        className="w-full max-w-screen-md text-center"
-        style={{ overflow: "visible" }}
-      >
-        <h1
-          className={title({ class: "lg:text-7xl md:text-6xl mb-2 block" })}
-          style={{ verticalAlign: "bottom", lineHeight: "1.2" }}
-        >
+      <div className="w-full max-w-screen-md text-center" style={{ overflow: "hidden" }}>
+        <h1 className={`${title({ color: "violet" })} lg:text-7xl md:text-6xl mt-2 block`}>
           Pricing
         </h1>
         <p className="mt-2 text-xl mb-8 max-w-screen-md mx-auto">
-          Choose the plan that suits you best. Start with a free trial or
-          subscribe to our enterprise plan for full access to all features.
+          Choose the plan that suits you best. Start with a free trial or subscribe to our enterprise plan for full access to all features.
         </p>
       </div>
       <div className="max-w-[900px] gap-8 grid grid-cols-12 px-8 mt-4">

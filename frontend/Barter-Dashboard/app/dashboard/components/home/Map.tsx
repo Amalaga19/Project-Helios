@@ -195,7 +195,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
   // Returning the JSX structure of the component.
   return (
     // Wrapper div with relative positioning and defined height and width.
-    <div className="relative" style={{ height: "500px", width: "100%" }}>
+    <div className="relative" style={{ height:"100%", width: "100%" }}>
       {/* DynamicMap component rendering the map with the specified center, style, and zoom level. */}
       <DynamicMap
         center={mapCenter}

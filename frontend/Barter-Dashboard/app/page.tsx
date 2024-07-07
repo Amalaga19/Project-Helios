@@ -46,7 +46,7 @@ export default function Home() {
   // The return statement defines the JSX structure of the component.
   return (
     // Section element with utility classes for styling and layout.
-    <section className="flex flex-col items-center justify-center gap-4 py-12 px-4 md:py-16 md:px-8">
+    <section className="flex flex-col items-center justify-center gap-4 px-4 md:px-8">
       {/* Container for the main headings with styling for responsiveness. */}
       <div
         className="w-full max-w-screen-md text-center"

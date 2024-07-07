@@ -21,12 +21,10 @@ export default function MainLayout({
       {/* Rendering the Navbar component at the top of the layout. */}
       <Navbar />
       {/* Main content area with responsive padding and flex-grow for filling available space. */}
-      <main className="container mx-auto max-w-7xl pt-16 px-8 md:px-12 flex-grow">
+      <main className="container mx-auto max-w-7xl flex-grow">
         {/* Rendering the children elements inside this main content area. */}
         {children}
       </main>
-        {/* Footer element with styling for alignment and spacing. */}
-      <footer className="w-full flex items-center justify-center py-3" />
     </div>
   );
 }
