@@ -144,9 +144,9 @@ def get_query(catering, commercial, production, service, office): #This function
     """
     return query
 
-def record_request(longitude, latitude, radius, catering, commercial, production, service, office): #This function records the request in the database
+def record_request(longitude, latitude, catering, commercial, production, service, office): #This function records the request in the database
     right_now = datetime.datetime.now()
-    new_request = Requests(DATE_TIME = right_now, LONGITUDE=longitude, LATITUDE=latitude, RADIUS=radius, CATERING=catering, COMMERCIAL=commercial, PRODUCTION=production, SERVICE=service, OFFICE=office)
+    new_request = Requests(DATE_TIME = right_now, LONGITUDE=longitude, LATITUDE=latitude, CATERING=catering, COMMERCIAL=commercial, PRODUCTION=production, SERVICE=service, OFFICE=office)
     db.session.add(new_request)
     db.session.commit()
 
@@ -172,7 +172,7 @@ def get_places():
     app.logger.debug(f"Category selections - Catering: {catering}, Commercial: {commercial}, Production: {production}, Service: {service}, Office: {office}")
 
     query = text(get_query(catering, commercial, production, service, office))
-    record_request(lon, lat, radius_meters, catering, commercial, production, service, office)
+    #record_request(lon, lat, catering, commercial, production, service, office)
     try:
         results = db.session.execute(query, {'point': f'POINT({lon} {lat})', 'radius_meters': radius_meters})
         places_list = []

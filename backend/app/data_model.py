@@ -22,7 +22,6 @@ class Requests(db.Model):
     USER_ID = db.Column(db.Integer, db.ForeignKey('USERS.USER_ID'), nullable=False)
     LONGITUDE = db.Column(db.Float, nullable=False)
     LATITUDE = db.Column(db.Float, nullable=False)
-    RADIUS = db.Column(db.Integer, nullable=False)
     DATE_TIME = db.Column(db.DateTime, nullable=False)
     CATERING = db.Column(db.Boolean, nullable=False)
     COMMERCIAL = db.Column(db.Boolean, nullable=False)

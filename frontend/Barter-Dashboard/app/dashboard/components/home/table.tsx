@@ -54,7 +54,7 @@ const TableComponent: React.FC<TableComponentProps> = ({ businesses = [] }) => {
           <TableColumn key="NAME">Name</TableColumn>
           <TableColumn key="categories">Category</TableColumn>
           <TableColumn key="BARRIO">Barrio</TableColumn>
-          <TableColumn key="ADDRESS">Address</TableColumn>
+          <TableColumn key="LOCATION">Location</TableColumn>
           <TableColumn key="LONGITUDE">Longitude</TableColumn>
           <TableColumn key="LATITUDE">Latitude</TableColumn>
         </TableHeader>
