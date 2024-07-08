@@ -25,7 +25,7 @@ import { GithubIcon, LoginIcon } from "../components/icons";
 export const Navbar = () => {
     // Filter navigation items to include only specific labels.
   const filteredNavItems = siteConfig.navItems.filter((item) =>
-    ["Home", "Pricing", "Team", "Dashboard"].includes(item.label),
+    ["Home", "Team", "Dashboard"].includes(item.label),
   );
 
   return (
