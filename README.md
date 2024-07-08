@@ -33,23 +33,24 @@ Google Cloud account
 
 ### Backend Setup
 1. Clone the repository:
-
+```
 git clone https://github.com/yourusername/barter-energy.git
 cd barter-energy/backend
-
+```
 2. Create a virtual environment and activate it:
-
+```
 python -m venv venv
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-
+```
 3. Install the required packages:
-
+```
 pip install -r requirements.txt
-
+```
 4. Set up environment variables in a .env file:
-
+```
 DB_CONNECTION_STRING: "mssql+pyodbc://lbarbion:Corporateproject!@corporateproject.database.windows.net:1433/CorporateProject?driver=ODBC+Driver+18+for+SQL+Server"
 SECRET_KEY="your_secret_key"
+```
 
 5. Run the application:
 
@@ -62,21 +63,26 @@ python main.py
 To turn longitude and latitude data points into usable coordinates, we need a column that converts those data points into geographical coordinates. After uploading the clean CSV file found in the backend directory, you can use the following command in your SQL code editor to create the desired `LOCATION` column:
 
 -- Change the ID column to bigint to handle larger values
+```
 ALTER TABLE Places
 ALTER COLUMN PLACE_ID BIGINT NOT NULL;
-
+```
 -- Add the primary key constraint
+```
 ALTER TABLE Places
 ADD CONSTRAINT PK_Places PRIMARY KEY CLUSTERED (PLACE_ID);
-
+```
 -- Add the Location column
+```
 ALTER TABLE Places ADD Location GEOGRAPHY;
-
+```
 -- Populate the Location column with the latitude and longitude values
+```
 UPDATE Places
 SET Location = geography::Point(LATITUDE, LONGITUDE, 4326);
-
--- Create the spatial index on the Location column
-CREATE SPATIAL INDEX SI_Location ON Places(Location);
-
 ```
+-- Create the spatial index on the Location column
+```
+CREATE SPATIAL INDEX SI_Location ON Places(Location);
+```
+
