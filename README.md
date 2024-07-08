@@ -1,6 +1,6 @@
-# Barter-Project
+# Project Helios
 ## Introduction
-Barter Energy is revolutionizing the energy industry by integrating electricity generation and demand through shared solar rooftop installations in a decentralized manner. This project aims to help Barter Energy identify optimal locations for solar panel installations and potential business customers within a specific radius in Madrid.
+Barter Energy is revolutionizing the energy industry by integrating electricity generation and demand through shared solar rooftop installations in a decentralized manner. This project aims to help Barter Energy identify optimal locations for solar panel installations and potential business customers within a specific radius in Madrid. The deployed version can be accessed by clicking [here](https://project-helios-2024.vercel.app/).
 
 ## Project Objectives and Scope
 Our primary objective is to help Barter identify potential energy consumers by providing strategic information of those possible clients near a specific point on a map of Madrid within a 2 to 5 km radius. This project involves detailed area analyses to identify potential customer bases and ideal locations for new installations, adhering to legislative constraints restricting energy sales to a 2km diameter.
