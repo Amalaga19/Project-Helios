@@ -46,19 +46,38 @@ source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 ```
 pip install -r requirements.txt
 ```
-4. Set up environment variables in a .env file:
+4. Set up environment variables in a .env file. In Azure, [create a database in a Microsoft SQL Server](https://learn.microsoft.com/en-us/azure/azure-sql/database/single-database-create-quickstart?view=azuresql&tabs=azure-portal) and format the connection as is in this example:
 ```
-DB_CONNECTION_STRING: "mssql+pyodbc://lbarbion:Corporateproject!@corporateproject.database.windows.net:1433/CorporateProject?driver=ODBC+Driver+18+for+SQL+Server"
+DB_CONNECTION_STRING: "mssql+pyodbc://username:password@database_server_name.database.windows.net:1433/database_name?driver=ODBC+Driver+18+for+SQL+Server"
 SECRET_KEY="your_secret_key"
 ```
+For this project we used the following connection string:
+```
+DB_CONNECTION_STRING: "lbarbion:Corporateproject!@corporateproject.database.windows.net:1433/CorporateProject?driver=ODBC+Driver+18+for+SQL+Server"
 
-5. Run the application:
+```
 
-python main.py
+#### Obtaining, Processing and Uploading the Data to the Database
 
-## Frontend
+1. Add your GeoApify API key to your .env file. Name your GeoApify key `API_KEY_GEOAPIFY0`, replacing the `0` with the next numbers if you have multiple keys.
+   ```
+   API_KEY_GEOAPIFY0="YOUR_KEY_GOES_HERE"
+   API_KEY_GEOAPIFY1="YOUR_KEY_GOES_HERE"
+   ```
+2. Modify the coordinates and parameters of the file `places_data.py` to suit the area that will be searched and run the script. It will take several minutes or even hours. A success message will be printed once the CSV file has been created. The CSV file will be named `all_data.csv` and will be in the same folder as the rest of the scripts. Once modified, run the file with:
+```
+python places_data.py
+```
+4. Run the `process_data.py` file, which will create a CSV file that is ready to be uploaded into the database called `clean_data.csv`.
+```
+python process_data.py
+```
+6. Load the data to the database by running `load_to_db.py`, it will use the `clean_data.csv` file.
+```
+python load_to_db.py
+```
 
-## Database
+#### Database
 
 To turn longitude and latitude data points into usable coordinates, we need a column that converts those data points into geographical coordinates. After uploading the clean CSV file found in the backend directory, you can use the following command in your SQL code editor to create the desired `LOCATION` column:
 
@@ -87,6 +106,13 @@ CREATE SPATIAL INDEX SI_Location ON Places(Location);
 ```
 
 
+##Run the Backend Application:
+
+Enter the following command on your preferred command line or terminal:
+```
+python main.py
+```
+
 ## Frontend
 
 The frontend of this applicaiton was built using Next.js, Typescript, and the Next.UI library. 
@@ -113,8 +139,8 @@ the businesses displayed on the map in text form. Users can download this data a
 
 Ensure you have the following installed before setting up the frontend: 
 ```
-    - Node.js 
-	- npm or yarn 
+Node.js 
+npm or yarn 
 ```
 
 ### Installation 
@@ -141,16 +167,16 @@ yarn install
 ```
 
 ### Environment Variables 
-The frontend requires environemnt variables to be configured. Create a .env.local file in the frontend directory with the following content: 
+The front end requires environment variables to be configured. Create a .env.local file in the frontend directory with the following content: 
 
 ```
-1. If backend is on cloud: NEXT_PUBLIC_API_URL=https://barter-corporateproject.ew.r.appspot.com/
-2. If backend is local: NEXT_PUBLIC_API_URL= http://localhost:5000/api
+1. If backend is on cloud: NEXT_PUBLIC_API_URL=https://barter-corporateproject.ew.r.appspot.com/ #or your own link to a deployed backend of this project
+2. If the backend is local: NEXT_PUBLIC_API_URL= http://localhost:5000/api
 ```
 
 ### Running the Frontend
 
-To start the frontend in development mode, use the following command: 
+To start the front in development mode, use the following command: 
 
 ```
 npm run dev
@@ -158,19 +184,19 @@ npm run dev
 yarn dev 
 ```
 
-These commands start the Next.js development server, which is accesible at http://localhost:3000. The development server supports hot reloading, 
-so any changes you make will be reflected inmediately. 
+These commands start the Next.js development server, which is accessible at http://localhost:3000. The development server supports hot reloading, 
+so any changes you make will be reflected immediately. 
 
 ### Building for Production 
 
-To build the frontend for produciton deployment, run: 
+To build the front for production deployment, run the following: 
 
 ```
 npm run build
 # or
 yarn build 
 ```
-These commands create an optimzied production build in the .next folder. To start the server use: 
+These commands create an optimized production build in the .next folder. To start the server use the following: 
 
 ```
 npm start 
@@ -178,11 +204,11 @@ npm start
 yarn start 
 ```
 
-These commands will run the application in produciton mode at http://localhost:3000
+These commands will run the application in production mode at http://localhost:3000
 
 ### Frontend Scripts 
 
-Here are the avialbe scripts for the frontend, defined in the package.json file: 
+Here are the available scripts for the frontend, defined in the package.json file: 
 
 ```
 "scripts": {
@@ -193,16 +219,16 @@ Here are the avialbe scripts for the frontend, defined in the package.json file:
 }
 ```
 
-- npm run dev: Stars the development sever
+- npm run dev: Stars the development server
 - npm run build: Builds the project for production 
-- npm start: Starts the produciton server. 
+- npm start: Starts the production server. 
 - npm run lint: Lints the codebase to ensure code quality 
 
 ### Project Structure 
 
-Understnaidn the project structure can help you navigate more effectively: 
+Understanding the project structure can help you navigate more effectively: 
 
-### Exaple of using Next.UI components 
+### Example of using Next.UI components 
 
 We utilize the Next.UI for building user interfaces. Here is an example of how to integrate a Next.UI component: 
 
@@ -216,6 +242,9 @@ const ExampleComponent = () => (
 );
 export default ExampleComponent;
 ```
+
+###Using the Website
+
 
 ### Acknowledgements
 
