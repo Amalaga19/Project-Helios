@@ -59,10 +59,8 @@ df_clean_data.columns = df_clean_data.columns.str.replace(".", "_")
 df_clean_data.fillna("", inplace=True)
 
 df_clean_data.head()
-#Replace accented characters with non-accented characters throughout the dataframe in the columns where the values are strings, example "é" with "e"
-df_clean_data = df_clean_data.apply(lambda x: x.str.normalize("NFKD").str.encode("ascii", errors="ignore").str.decode("utf-8") if x.dtype == "object" else x)
 
 df_clean_data["LOCATION"] = df_clean_data.apply(lambda x: WKTElement(f'POINT({x["LONGITUDE"]} {x["LATITUDE"]})', srid=4326), axis=1).astype(str)
 
 #Save the data
-df_clean_data.to_csv("clean_data.csv", index=False)
+df_clean_data.to_csv("clean_data.csv", index=False, encoding="utf-8")
