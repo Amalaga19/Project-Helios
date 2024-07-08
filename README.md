@@ -86,3 +86,142 @@ SET Location = geography::Point(LATITUDE, LONGITUDE, 4326);
 CREATE SPATIAL INDEX SI_Location ON Places(Location);
 ```
 
+
+## Frontend
+
+The frontend of this applicaiton was built using Next.js, Typescript, and the Next.UI library. 
+Below you will find the details on how to set up the run the frontend part of the application. 
+
+### Frotend Description 
+
+The frontend is responsible for the user interface and client-side logic. It interacts with the backend API to fetch and display data, 
+providing a responsive and user-friendly experience on computer screens. The use of Next.js ensures server-side rendering and optimized 
+performance, while TypeScript provides type safety and a better developer experience.
+
+The frontend application features a top navigation bar, allowing users to quickly navigate between pages. The home page details the 
+purpose of the project with three cards explaining the “Why,” “What,” and “How.” The team page provides an overview of our team members 
+and their roles in the project.
+
+The Dashboard page, accessible only to logged-in users, offers a detailed dashboard view. Within this dashboard, a map component displays 
+circle markers representing businesses within a 2km radius. Users can filter businesses by category, and clicking on a specific marker brings 
+up a pop-up with more details (business name, address, longitude, latitude, and category).
+
+For accessibility, a legend on the right side of the map explains the colors used for the markers. Additionally, a table beneath the map lists 
+the businesses displayed on the map in text form. Users can download this data as a CSV file for further analysis in their preferred platform.
+
+### Prerequisites 
+
+Ensure you have the following installed before setting up the frontend: 
+```
+    - Node.js 
+	- npm or yarn 
+```
+
+### Installation 
+
+1. Clone the Git Repository: 
+
+```
+git clone https://github.com/yourusername/barter-energy.git
+cd barter-energy/frontend
+```
+
+2. Navigate to the frontend directory: 
+
+```
+cd your-project/frontend
+```
+
+3. Install dependencies
+
+```
+npm install 
+# or
+yarn install 
+```
+
+### Environment Variables 
+The frontend requires environemnt variables to be configured. Create a .env.local file in the frontend directory with the following content: 
+
+```
+1. If backend is on cloud: NEXT_PUBLIC_API_URL=https://barter-corporateproject.ew.r.appspot.com/
+2. If backend is local: NEXT_PUBLIC_API_URL= http://localhost:5000/api
+```
+
+### Running the Frontend
+
+To start the frontend in development mode, use the following command: 
+
+```
+npm run dev
+# or
+yarn dev 
+```
+
+These commands start the Next.js development server, which is accesible at http://localhost:3000. The development server supports hot reloading, 
+so any changes you make will be reflected inmediately. 
+
+### Building for Production 
+
+To build the frontend for produciton deployment, run: 
+
+```
+npm run build
+# or
+yarn build 
+```
+These commands create an optimzied production build in the .next folder. To start the server use: 
+
+```
+npm start 
+# or
+yarn start 
+```
+
+These commands will run the application in produciton mode at http://localhost:3000
+
+### Frontend Scripts 
+
+Here are the avialbe scripts for the frontend, defined in the package.json file: 
+
+```
+"scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "next lint"
+}
+```
+
+- npm run dev: Stars the development sever
+- npm run build: Builds the project for production 
+- npm start: Starts the produciton server. 
+- npm run lint: Lints the codebase to ensure code quality 
+
+### Project Structure 
+
+Understnaidn the project structure can help you navigate more effectively: 
+
+### Exaple of using Next.UI components 
+
+We utilize the Next.UI for building user interfaces. Here is an example of how to integrate a Next.UI component: 
+
+```
+import { Button } from '@nextui-org/react';
+
+const ExampleComponent = () => (
+  <Button auto color="primary">
+    Click Me
+  </Button>
+);
+export default ExampleComponent;
+```
+
+### Acknowledgements
+
+This project was made possible by leveraging the following open-source tools and templates: 
+
+- Next.js
+- TypeScript
+- Next.UI
+- 
