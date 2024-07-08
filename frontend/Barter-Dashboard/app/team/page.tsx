@@ -18,7 +18,7 @@ export default function TeamPage() {
   // Defining an array of team member objects, each containing details about the team member.
   const teamMembers = [
     {
-      name: "Andres Malaga",
+      name: "Andrés Málaga",
       position: "Backend Engineer & Software Architect",
       hometown: "Hometown: Lima, Peru",
       phone: "Phone +51 988 464 342",
@@ -45,7 +45,7 @@ export default function TeamPage() {
       linkedin: "https://www.linkedin.com/in/sandroalvines/",
     },
     {
-      name: "Alexis Sanchez",
+      name: "Alexis Sánchez",
       position: "Frontend Engineer & Project Manager",
       hometown: "Hometown: San Juan, Puerto Rico",
       phone: "Phone: +1 787 389 7024",
