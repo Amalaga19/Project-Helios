@@ -224,4 +224,4 @@ This project was made possible by leveraging the following open-source tools and
 - Next.js
 - TypeScript
 - Next.UI
-- 
+- https://github.com/Siumauricio/nextui-dashboard-template
