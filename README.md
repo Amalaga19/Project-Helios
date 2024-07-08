@@ -56,8 +56,6 @@ SECRET_KEY="your_secret_key"
 
 python main.py
 
-## Frontend
-
 ## Database
 
 To turn longitude and latitude data points into usable coordinates, we need a column that converts those data points into geographical coordinates. After uploading the clean CSV file found in the backend directory, you can use the following command in your SQL code editor to create the desired `LOCATION` column:
