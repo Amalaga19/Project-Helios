@@ -27,13 +27,13 @@ export default function Home() {
       title: "The Why",
       subtitle: "Understanding the need",
       img: "/pictures/bater-building.jpg",
-      content: "Our goal is to optimize the placement of solar panels and identify potential business partners within Madrid.",
+      content: "Our goal is to optimize the placement of solar panels and identify potential customers within Madrid.",
     },
     {
       title: "The What",
       subtitle: "Project Overview",
       img: "/pictures/barter-satellite.jpg",
-      content: "We are analyzing areas within a 2 to 5 km radius from a given point to provide strategic data nearby businesses and their solar radiation.",
+      content: "We are analyzing areas within a 2km radius from a given point to provide strategic data on nearby businesses and the average solar radiation of the area.",
     },
     {
       title: "The How",

@@ -20,8 +20,8 @@ export default function TeamPage() {
     {
       name: "Andres Malaga",
       position: "Backend Engineer & Software Architect",
-      description:
-        "Meet Andres Malaga, Backend Engineer & Software Architect for Group 4 @MCSBT 2024.",
+      hometown: "Hometown: Lima, Peru",
+      phone: "Phone +51 988 464 342",
       img: "/images/andreslinkedin.jpg",
       github: "https://github.com/Amalaga19",
       linkedin: "https://linkedin.com/in/Andres-Malaga",
@@ -29,8 +29,8 @@ export default function TeamPage() {
     {
       name: "Leana Barbion",
       position: "Database Engineer & Product Designer",
-      description:
-        "Meet Leana Barbion, Database Engineer & Product Designer for Group 4 @MCSBT 2024.",
+      hometown: "Hometown: Tahiti, French Polynesia",
+      phone: "Phone: +33 611 780 455",
       img: "/images/leanalinkedin.jpg",
       github: "https://github.com/leanabarbion",
       linkedin: "https://www.linkedin.com/in/leanabarbion/",
@@ -38,8 +38,8 @@ export default function TeamPage() {
     {
       name: "Sandro Alvines",
       position: "Marketing and Sales Manager",
-      description:
-        "Meet Sandro Alvines, Project Manager & Sales Representative for Group 4 @MCSBT 2024.",
+      hometown: "Hometown: Milan, Italy",
+      phone: "Phone: +39 388 988 4101",
       img: "/images/sandrolinkedin.jpg",
       github: "https://github.com/sandroalv",
       linkedin: "https://www.linkedin.com/in/sandroalvines/",
@@ -47,14 +47,14 @@ export default function TeamPage() {
     {
       name: "Alexis Sanchez",
       position: "Frontend Engineer & Project Manager",
-      description:
-        "Meet Alexis Sanchez, Product Designer & Frontend Engineer for Group 4 @MCSBT 2024.",
+      hometown: "Hometown: San Juan, Puerto Rico",
+      phone: "Phone: +1 787 389 7024",
       img: "/images/alexislinkedin.jpg",
       github: "https://github.com/caborojo",
       linkedin: "https://www.linkedin.com/in/alexis-sanchez/",
     },
   ];
-
+  
   // Returning the JSX structure of the component.
   return (
     // Main section element with utility classes for styling and layout.
@@ -114,8 +114,10 @@ export default function TeamPage() {
               <h4 className="text-md font-semibold text-gray-400 text-center">
                 {member.position}
               </h4>
-              {/* Description of the team member. */}
-              <p className="text-sm mt-4 text-center">{member.description}</p>
+              {/* hometown of the team member. */}
+              <p className="text-sm mt-4 text-center">{member.hometown}</p>
+              {/* Phone number of the team member. */}
+              <p className="text-sm mt-4 text-center">{member.phone}</p>
             </div>
             {/* Links to the team member's GitHub and LinkedIn profiles. */}
             <div className="flex justify-center gap-4 mt-4">
