@@ -111,8 +111,8 @@ the businesses displayed on the map in text form. Users can download this data a
 
 Ensure you have the following installed before setting up the frontend: 
 ```
-    - Node.js 
-	- npm or yarn 
+Node.js 
+npm or yarn 
 ```
 
 ### Installation 
