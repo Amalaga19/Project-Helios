@@ -1,16 +1,5 @@
 # Project Helios
 
-## Copyright (c) 2024 Project Helios Contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-## Non-Commercial Clause:
-
-The Software shall not be used, either in whole or in part, for commercial purposes without prior written authorization from the copyright holder. “Commercial purposes” means any activity in which the user intends to receive monetary compensation or other consideration of value.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## Introduction
 Barter Energy is revolutionizing the energy industry by integrating electricity generation and demand through shared solar rooftop installations in a decentralized manner. This project aims to help Barter Energy identify optimal locations for solar panel installations and potential business customers within a specific radius in Madrid. The deployed version can be accessed by clicking [here](https://project-helios-2024.vercel.app/).
@@ -260,13 +249,6 @@ export default ExampleComponent;
 
 
 ### Acknowledgements
-
-This project was made possible by leveraging the following open-source tools and templates: 
-
-- Next.js
-- TypeScript
-- Next.UI
-- https://github.com/Siumauricio/nextui-dashboard-template
 
 This project was made possible by leveraging the following open-source tools and templates: 
 
